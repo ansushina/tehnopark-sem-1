@@ -32,7 +32,7 @@ struct element
 
 el_t *create_el(char el, data_t *data)
 {
-	el_t *new = malloc(sizeof(data_t));
+	el_t *new = malloc(sizeof(el_t));
 	if (new)
 	{
 		new->data = data;
@@ -45,15 +45,19 @@ el_t *create_el(char el, data_t *data)
 int char_to_int(char *line, int *count)
 {
 	int i = 0;
+	//printf("[%c]", line[i]);
 	while(line[i] >= '0' && line[i] <= '9')
 	{
 		i++;
+		//printf("[=%c=]", line[i]);
 	}
 	*count = i;
+	//printf("[%d]", *count);
 	int num = 0;
 	for (int j = 0; j < i; j++)
 	{
-		num += (line[i-j] - '0') * pow(10, j);
+		num += (line[i-j-1] - '0') * pow(10, j);
+		//printf("[%c]", line[i-j-1]);
 	}
 	return num;
 }
@@ -62,6 +66,7 @@ data_t *create_data(char *line)
 {
 	size_t count = 0;
 	size_t i = 0;
+	//printf("dasdasdasd %c ", line[i]);
 	while(line[i] != ']')
 	{
 		if (line[i] >= '0' && line[i] <= '9')
@@ -71,17 +76,26 @@ data_t *create_data(char *line)
 		    	i++;
 	    	}
 	    	count++;
+			i--;
 		}
 		i++;
 	}
 	
+	printf("[%d]", count);
 	if (count == 0)
 		return NULL;
-	
-	data_t * new = malloc(sizeof(data_t));
+	//([1,2]+[3,4])
+
+	//printf(" 9 %d ", sizeof(struct data)); //16
+	data_t *new = (data_t *)malloc(sizeof(struct data));
+	//printf(" 9 ");
+	int *buf = NULL;
+	//printf(" 9 ");
 	if (new)
 	{
-		int *buf = malloc(count * sizeof(int));
+		//printf(" 9 ");
+		buf = malloc(count * sizeof(int));
+		//printf(" 9 ");
 		if (!buf)
 		{
 			free(new);
@@ -90,26 +104,35 @@ data_t *create_data(char *line)
 	}
 	i = 0;
 	count = 0;
+	//printf("[%d]", count);
 	while(line[i] != ']')
 	{
 		if (line[i] > '0' && line[i] < '9')
 		{
-		    int j;
+		    int j = 0;
 			int a = char_to_int(line + i,&j);
-			i += j;
+			i += j - 1;
 			buf[count] = a;
+			//printf("[%d]", count);
 			count++;
 		}
 		i++;
 	}
-	
-	new->data = buf;
+	//printf("[%d]", count);
+	new->mas = buf;
 	new->n = count;
+	for (int i = 0; i < new->n; i++)
+	{
+		printf("%d+ ", buf[i]);
+	}
 	return new;
 }
 
+
 char *my_strdup(const char *str);
 size_t my_getline(char **line, size_t *n, FILE *stream);
+
+el_t *make_spisok_from_line(char *line, size_t n);
 
 int main(void)
 {
@@ -117,19 +140,21 @@ int main(void)
 	int rc = OK;
 	
 	char *line;
-	size_t n; 
+	size_t size; 
+	el_t *sp = NULL;
 	
 	rc = my_getline(&line, &size, stdin);
 	if (rc > 0)
 	{
-		
+		printf("%s", line);
+		sp = make_spisok_from_line(line, size);
 		free(line);
 	}
 	else if ( rc == ERR_MEMORY)
 	{
 		printf("[Memory error]\n");
 	}
-	else if (n == 0)
+	else if (size == 0)
 	{
 		printf("[error no data]\n");
 	}
@@ -235,23 +260,141 @@ el_t *make_spisok_from_line(char *line, size_t n)
 {
 	el_t *head = create_el('$',NULL);
 	el_t *el = head;
-	int i = 0;
+	size_t i = 0;
 	for (i = 0; i < n ; i++)
 	{
+		printf("%d - %c\n ", i, line[i]);
 		if (line[i] == '(' || line[i] == ')' ||
-		    line[i] == '*' || line[i] == '\' ||
-			line[i] == '+')
+		    line[i] == '^' || line[i] == '|' ||
+			line[i] == 'U')
 		{
 			data_t *data = NULL;
+			//printf("iasodiao %c", line[i+1]);
 			if (line[i+1] == '[')
 			{
+				//printf("  sas ");
 				data = create_data(line+i+1);
 			}
+			//printf("  111 ");
 		    el_t *new = create_el(line[i], data);
+			if (!new)
+			{
+				continue;
+			}
 			el->next = new;
 			new->prev = el;
 			el = new;
 		}
 	}
 	return head;
+}
+
+int is_in(data_t *data, int n)
+{
+	for(size_t i = 0; i < data->n; i++)
+	{
+		if (data->mas[i] == n)
+			return 1;
+	}
+	return 0;
+}
+
+data_t *alloc_data_t(size_t count)
+{
+	data_t *new = (data_t *)malloc(sizeof(struct data));
+	int *buf = NULL;
+	if (new)
+	{
+		buf = malloc(count * sizeof(int));
+		if (!buf)
+		{
+			free(new);
+			return NULL;
+		}
+	}
+	new->mas = buf;
+	new->n = count;
+	return new;
+}
+
+data_t *obed(data_t *d1, data_t *d2)
+{
+	int count = 0;
+	for (size_t i = 0 ; i < d2->n; i++)
+	{
+		if (!is_in(d1,d2->mas[i]))
+			count++;
+	}
+	data_t *new = alloc_data_t(count + d1->n);
+	if (!new)
+		return NULL;
+	count = 0;
+	for (size_t i = 0 ; i < d1->n; i++)
+	{
+		new->mas[count] = d1->mas[i];
+		count++;
+	}
+	for (size_t i = 0 ; i < d2->n; i++)
+	{
+		if (!is_in(d1,d2->mas[i]))
+		{
+			new->mas[count] = d2->mas[i];
+			count++;
+		}	
+	}
+	
+	return new;
+}
+
+data_t *peres(data_t *d1, data_t *d2)
+{
+	int count = 0;
+	for (size_t i = 0 ; i < d2->n; i++)
+	{
+		if (is_in(d1,d2->mas[i]))
+			count++;
+	}
+	data_t *new = alloc_data_t(count);
+	if (!new)
+		return NULL;
+	count = 0;
+	for (size_t i = 0 ; i < d2->n; i++)
+	{
+		if (is_in(d1,d2->mas[i]))
+		{
+			new->mas[count] = d2->mas[i];
+			count++;
+		}	
+	}
+}
+
+data_t *raz(data_t *d1, data_t *d2)
+{
+	int count = 0;
+	for (size_t i = 0 ; i < d1->n; i++)
+	{
+		if (!is_in(d2,d1->mas[i]))
+			count++;
+	}
+	data_t *new = alloc_data_t(count);
+	if (!new)
+		return NULL;
+	count = 0;
+
+	for (size_t i = 0 ; i < d1->n; i++)
+	{
+		if (!is_in(d2,d1->mas[i]))
+		{
+			new->mas[count] = d1->mas[i];
+			count++;
+		}	
+	}
+	
+	return new;
+}
+
+
+int process(el_t *head, data_t *otvet)
+{
+	
 }
