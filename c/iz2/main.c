@@ -117,11 +117,11 @@ int main(void)
 
     //проверим проавильность строки
     if (!check_line(line))
-	{
-		free(line);
-		printf("[error]\n");
-		return OK;
-	}
+    {
+        free(line);
+        printf("[error]\n");
+        return OK;
+    }
     // создадим список с значищами элементами из строки
     element_t *spisok = NULL;
     spisok = make_spisok_from_line(line);
