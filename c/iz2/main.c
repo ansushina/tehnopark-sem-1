@@ -127,10 +127,10 @@ int main(void)
     spisok = make_spisok_from_line(line);
     if (!spisok)
     {
-		printf("[error]\n");
-		free(line);
-		return OK;
-	}
+        printf("[error]\n");
+        free(line);
+        return OK;
+    }
 	
     set_t *otvet = NULL;
     rc = calculate(spisok, &otvet);
