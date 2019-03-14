@@ -1,8 +1,8 @@
 /*
  * Сушина А АПО-13
 Задача B-1. Калькулятор для числовых множеств
-Time limit:	14 s
-Memory limit:	64 M
+Time limit:    14 s
+Memory limit:    64 M
 Разработайте программу-калькулятор, умеющую вычислять арифметические 
 выражения над множествами натуральных чисел. Входные данные 
 (выражение с описанием множеств и производимых над ними операций) 
@@ -45,104 +45,109 @@ return -1, exit(1) и т.п. Даже если обнаружилась кака
 #define ERR_MEMORY 3
 #define ERR_NO_CORRECT 4
 
-typedef struct data data_t;
-struct data
+typedef struct set set_t;
+struct set
 {
-	int *mas;
-	size_t n;
+    int *mas;
+    size_t n;
 };
 
 
 //Элемент двусвязного списка, в котором хранятся элементы ()U^\ и $
 //каждому элементу соответсвует идущее после него множество или NULL
-typedef struct element el_t;
+typedef struct element element_t;
 struct element 
 {
-	char el;
-	data_t *data;
-	el_t *next;
-	el_t *prev;
+    char element;
+    set_t *set;
+    element_t *next;
+    element_t *prev;
 };
 
 int char_to_int(const char *line, int *count);
-void sort_data_t(data_t *data);
-void print_data_t(data_t *data);
-void free_data_t(data_t *data);
+void sort_set_t(set_t *set);
+void print_set_t(set_t *set);
+void free_set_t(set_t *set);
 size_t count_nums(const char *line);
-data_t *alloc_data_t(const size_t count);
-data_t *create_data(const char *line);
+set_t *alloc_set_t(const size_t count);
+set_t *create_set(const char *line);
 
 char *my_strdup(const char *str);
 size_t my_getline(char **line, size_t *n, FILE *stream);
 
-int is_normal(const char *line);
-int iscorrect(const char *line);
+int is_correct_in_square_brackets(const char *line);
+int is_correct_line(const char *line);
 void delete_spaces(char *str);
 
-int is_in(data_t *data, const int n);
-data_t *do_union(data_t *d1, data_t *d2);
-data_t *do_intersection(data_t *d1, data_t *d2);
-data_t *do_subtraction(data_t *d1, data_t *d2);
+int is_in_set(set_t *set, const int n);
+set_t *do_union(set_t *set1, set_t *set2);
+set_t *do_intersection(set_t *set1, set_t *set2);
+set_t *do_subtraction(set_t *set1, set_t *set2);
 
-el_t *make_spisok_from_line(const char *line);
-el_t *create_el(char el, data_t *data);
-el_t *delete_el_t(el_t *el);
-void free_el_t(el_t *el);
-void free_sp(el_t *sp);
+element_t *make_spisok_from_line(const char *line);
+element_t *create_element(char element, set_t *set);
+element_t *delete_element_t(element_t *element);
+void free_element_t(element_t *element);
+void free_spisok(element_t *spisok);
 
 int check_line(char *line);
-int find_bracets(el_t *head, el_t **open, el_t **close);
-int make_action_in_brackets(el_t *open, el_t *close, char action);
-int process(el_t *head, data_t **otvet);
+int find_brackets(element_t *head, element_t **open, element_t **close);
+int make_action_in_brackets(element_t *open, element_t *close, char action);
+int calculate(element_t *head, set_t **otvet);
 
 int main(void)
 {
-	setbuf(stdout, NULL);
-	int rc = OK;
-	
-	char *line;
-	size_t size; 
-	el_t *sp = NULL;
-	rc = my_getline(&line, &size, stdin);
-	if (rc > 1)
-	{
-        //проверим проавильность строки
-		if (check_line(line))
-		{
-            // создадим список с значищами элементами из строки
-		    sp = make_spisok_from_line(line);
-	    	if (sp)
-	    	{
-                data_t *otvet = NULL;
-	    		rc = process(sp, &otvet);
-                if (rc == OK)
-				{
-					print_data_t(otvet);
-				}
-                else
-                {
-                    printf("[error]\n");
-                }
-                free_sp(sp);
-	    	}
-	    	else 
-	    	{
-	    		printf("[error]\n");
-	    	}
-		}
-		else 
-		{
-			printf("[error]\n");
-		}
-	}
-	else
-	{
-		printf("[error]\n");
-	}
-	free(line);
-    return OK; 	
+    setbuf(stdout, NULL);
+    int rc = OK;
+
+    char *line = NULL;
+    size_t line_size = 0;
+    rc = my_getline(&line, &line_size, stdin);
+    if (rc < 1)
+    {
+        printf("[error]");
+        return OK;
+    }
+    if (rc == 1)
+    {
+        free(line);
+        printf("[error]");
+        return OK;
+    }
+
+    //проверим проавильность строки
+    if (check_line(line))
+    {
+        // создадим список с значищами элементами из строки
+        element_t *spisok = NULL;
+        spisok = make_spisok_from_line(line);
+        if (spisok)
+        {
+            set_t *otvet = NULL;
+            rc = calculate(spisok, &otvet);
+            if (rc == OK)
+            {
+                print_set_t(otvet);
+            }
+            else
+            {
+                  printf("[error]\n");
+            }
+            free_spisok(spisok);
+        }
+        else
+        {
+            printf("[error]\n");
+        }
+    }
+    else
+    {
+        printf("[error]\n");
+    }
+    free(line);
+    return OK;
 }
-/////////////////////////////////////////////////////////////////////////////////
+
 //io
 /**
    Создает дубликат строки(требуется освобождение памяти после вызова)
@@ -152,24 +157,24 @@ int main(void)
  */
 char *my_strdup(const char *str)
 {
-	if (!str)
-		return NULL;
-	
-	size_t len = strlen(str);
-	
-	char *new = malloc((len + 1) * sizeof(char));
-	if (!new)
-		return NULL;
-	
-	char *buf = memcpy(new, str, len + 1);
-	if (!buf)
-	{
-		free(new);
-		return NULL;
-	}
-	new = buf;
-	
-	return new;
+    if (!str)
+        return NULL;
+
+    size_t len = strlen(str);
+
+    char *new = malloc((len + 1) * sizeof(char));
+    if (!new)
+        return NULL;
+
+    char *buf = memcpy(new, str, len + 1);
+    if (!buf)
+    {
+        free(new);
+        return NULL;
+    }
+    new = buf;
+
+    return new;
 }
 
 /**
@@ -187,176 +192,191 @@ size_t my_getline(char **line, size_t *n, FILE *stream)
     {
         return -1;
     }
-	
-    size_t size = 0;//требуемый размер памяти
+
+    size_t   required_memory_size = 0;
     size_t len = 0;
-	size_t alloc_size = 0;//выделенный размер памяти - 1
+    size_t alloc_size = 0;//выделенный размер памяти - 1
     char buf[BUF_SIZE + 1];
     char *str = NULL;
-	char *b = NULL;
-	
-	//Считываем в буфер часть строки, пока не конец файла
-    while (fgets(buf, BUF_SIZE + 1, stream))
-	{
-		len = strlen(buf);
-		if (!len)
-			break;
-		size += len;
-		
-		// если необходимо выделить еще память
-		if (size > alloc_size)
-		{
-			b = realloc(str, size + 1);
-		    if (!b)
-		    {
-		    	if (str)
-		    	    free(str);
-	    		return -1;
-	    	}
-		    str = b;
-			alloc_size = size;
-		}
-		
-		strncpy(str + size - len, buf, len * sizeof(char));
-		//Если считалась вся строка, заканчиваем считывание.
-		if (str[size - 1] == '\n')
-		{
-			break;
-		}
-		if (feof(stream) || ferror(stream))
-		{
-			break;
-		}
-	}
-    if (!size)
-	{
-		if (str)
-		    free(str);
-        return -1;
-	}
-	str[size] = '\0';
-	*line = str;
-	*n = size;
-	return size;
-}
-////io
-//////////////////////////////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////////////////////////////
+    //Считываем в буфер часть строки, пока не конец файла
+    while (fgets(buf, BUF_SIZE + 1, stream))
+    {
+        len = strlen(buf);
+        if (!len)
+            break;
+        required_memory_size += len;
+
+        // если необходимо выделить еще память
+        if (  required_memory_size > alloc_size)
+        {
+            char *buffer = realloc(str, required_memory_size + 1);
+            if (!buffer)
+            {
+                if (str)
+                    free(str);
+                return -1;
+            }
+            str = buffer;
+            alloc_size = required_memory_size;
+        }
+
+        strncpy(str + required_memory_size - len, buf, len * sizeof(char));
+        //Если считалась вся строка, заканчиваем считывание.
+        if (str[required_memory_size - 1] == '\n')
+        {
+            break;
+        }
+        if (feof(stream) || ferror(stream))
+        {
+            break;
+        }
+    }
+    if (!required_memory_size)
+    {
+        if (str)
+            free(str);
+        return -1;
+    }
+    str[required_memory_size] = '\0';
+    *line = str;
+    *n = required_memory_size;
+    return required_memory_size;
+}
+
+
+
 ////string changes
 /**
   Проверяет правильность заполнения квадратных скобок
- * @brief is_normal
+ * @brief is_correct_in_square_brackets
  * @param line[in] - строка
  * @return Возвращает количество прочитанных символов, \
  0 если строка не подходит
  */
-int is_normal(const char *line)
+int is_correct_in_square_brackets(const char *line)
 {
-	int i = 1;
-	int flag = 0; //флаг найденного числа
-	while (line[i] != ']')
-	{
-		//printf("j [%c] ", line[i]);
-	    if (line[i] == '(' || line[i] == ')' || line[i] == '[')
-		    return 0;
-		if (line[i] >= '0' && line[i] <= '9' && !flag)
-		{
-			//если найдено число читаем его до конца
-		    while(line[i] >= '0' && line[i] <= '9')
-		    {
-		    	i++;
-	    	}
-			flag = 1;
-		}
-	    //если только что найдено число, но мы снова встретили число
-		//выходим из проверки
-		else if (flag && line[i] >= '0' && line[i] <= '9')
-		{
-			return 0;
-		}
-		//если найдена запятая, можно искать следующее число
-		if (line[i] == ',' && flag) 
-			flag = 0;
-		else if (line[i] == ']')
-			break;
-		else if (line[i] != ' ') //если непредвиденный символ
-			return 0;
-		i++;
-	}
-	return i;
+    int i = 1;
+    int num_is_finded = 0; //флаг найденного числа
+    while (line[i] != ']')
+    {
+        //printf("j [%c] ", line[i]);
+        if (line[i] == '(' || line[i] == ')' || line[i] == '[')
+            return 0;
+        if (line[i] >= '0' && line[i] <= '9' && !num_is_finded)
+        {
+            //если найдено число читаем его до конца
+            while(line[i] >= '0' && line[i] <= '9')
+            {
+                i++;
+            }
+            num_is_finded = 1;
+        }
+        //если только что найдено число, но мы снова встретили число
+        //выходим из проверки
+        else if (num_is_finded && line[i] >= '0' && line[i] <= '9')
+        {
+            return 0;
+        }
+        //если найдена запятая, можно искать следующее число
+        if (line[i] == ',' && num_is_finded)
+            num_is_finded = 0;
+        else if (line[i] == ']')
+            break;
+        else if (line[i] != ' ') //если непредвиденный символ
+            return 0;
+        i++;
+    }
+    return i;
+}
+
+/**
+  Проверяет находится ли символ в строке actions
+ * @brief is_action
+ * @param actions[in] - строка
+ * @param symbol[in] - символ 
+ * @return 1 - находится, 0 - не находится
+ */
+int is_action(const char *actions, char symbol)
+{
+    int i = 0;
+    while (actions[i] != '\0')
+    {
+        if (actions[i] == symbol)
+            return 1;
+        i++;
+    }
+    return 0;
 }
 
 /**
   Проверяет правильность заполнения строки
- * @brief iscorrect
+ * @brief is_correct_line
  * @param line[in] - строка
  * @return 1 - верная строка, 0 - неверная
  */
-int iscorrect(const char *line)
+int is_correct_line(const char *line)
 {
     if (!line)
-	{
+    {
         return 0;
-	}
-	size_t i = 0;
-	int flag = 0;//флаг только что открытой скобки 
-	//равен нулю, когда встречает множество
-	int action_count = 0;//счетчий действий 
-	int set_count = 0;//счетчик множеств
-	size_t c_open = 0;// (
-	size_t c_close = 0; // )
-	char sym[] = "^U\\";
-	while (line[i] != '\0')
-	{
-		//printf("i[%c] ", line[i]);
-		if (line[i] == '[' ) //если встретили множество
-		{
-			flag = 0;
-			int k = is_normal(line+i);
-			if (k < 1)
-				return 0;
-			i += k; //пропускаем прочитанную часть
-			set_count++;
-		}
-		else if (line[i] == '(')
-		{
-			c_open++;
-			flag = 1;
-		}
-		else if (line[i] == ')')
-		{
-			if (flag == 1)
-				return 0;
-			c_close++;
-			if (c_close > c_open)
-			{
-				printf("here");
-				return 0;
-			}
-		}
-		else if (line[i] == ']')// закрывающая скобка до открывающей
-			return 0;
-			// если встречено действие, но оно идет сразу за скобкой
-		else if ((line[i] == sym[0] || line[i] == sym[1] || line[i] == sym[2]) && flag)
-			return 0;
-		else if (line[i] == 13 || line[i] == '\n') 
-			break;
-		// если какой-то непредвиденный символ
-		else if (line[i] != ' ' && !(line[i] == sym[0] || line[i] == sym[1] || line[i] == sym[2]))
-			return 0;
-		// если встречено действие
-		else if (line[i] == sym[0] || line[i] == sym[1] || line[i] == sym[2])
-		{
-			action_count++;
-			if (action_count < set_count)
-				return 0;
-		}
-		i++;
-	}
-	if (c_open != c_close)
-		return 0;
-	return 1;
+    }
+
+    size_t i = 0;
+    int open_finded = 0;
+    size_t action_count = 0;
+    size_t set_count = 0;
+    size_t count_open = 0;
+    size_t count_close = 0;
+    char actions[] = "^U\\";
+
+    while (line[i] != '\0')
+    {
+        //printf("i[%c] ", line[i]);
+        if (line[i] == '[' )
+        {
+            open_finded = 0;
+            int readed_count = is_correct_in_square_brackets(line+i);
+            if (readed_count < 1)
+                return 0;
+            i += readed_count;
+            set_count++;
+        }
+        else if (line[i] == '(')
+        {
+            count_open++;
+            open_finded = 1;
+        }
+        else if (line[i] == ')')
+        {
+            if (open_finded == 1)
+                return 0;
+            count_close++;
+            if (count_close > count_open)
+            {
+                printf("here");
+                return 0;
+            }
+        }
+        else if (line[i] == ']')
+            return 0;
+        else if (is_action(actions, line[i]) && open_finded)
+            return 0;
+        else if (line[i] == 13 || line[i] == '\n')
+            break;
+        else if (line[i] != ' ' && !is_action(actions, line[i]))
+            return 0;
+        else if (is_action(actions, line[i]))
+        {
+            action_count++;
+            if (action_count < set_count)
+                return 0;
+        }
+        i++;
+    }
+    if (count_open != count_close)
+        return 0;
+    return 1;
 }
 
 /**
@@ -366,32 +386,32 @@ int iscorrect(const char *line)
  */
 void delete_spaces(char *str)
 {
-	if (str == NULL)
-		return;
-	
-	int i = 0;
-	int j = 0;
-	while (str[i] == ' ')
-	{
-		i++;
-	}
-	while (str[i] != '\0')
-	{
-		while (str[i] != ' ' && str[i] != '\0')
-		{
-			str[j] = str[i];
-			j++;
-			i++;
-		}
-		while (str[i] == ' ')
-		{
-			i++;
-		}
-	}
-	if (str[j - 1] == ' ')
-	    str[j - 1] = '\0';
-	else 
-		str[j] = '\0';
+    if (str == NULL)
+        return;
+
+    int i = 0;
+    int j = 0;
+    while (str[i] == ' ')
+    {
+        i++;
+    }
+    while (str[i] != '\0')
+    {
+        while (str[i] != ' ' && str[i] != '\0')
+        {
+            str[j] = str[i];
+            j++;
+            i++;
+        }
+        while (str[i] == ' ')
+        {
+            i++;
+        }
+    }
+    if (str[j - 1] == ' ')
+        str[j - 1] = '\0';
+    else
+        str[j] = '\0';
 }
 
 /**
@@ -406,35 +426,32 @@ int check_line(char *line)
     {
         return 0;
     }
-	int rc = iscorrect(line);
-	if (rc)
-	{
-		delete_spaces(line);
-		return rc;
-	}
-	return rc;
+    int rc = is_correct_line(line);
+    if (rc)
+    {
+        delete_spaces(line);
+        return rc;
+    }
+    return rc;
 }
-////string changes
-////////////////////////////////
 
-/////////////////////////////////////////////////////////////////////////////
-//DATA
+//set
 /**
   Сортировка элементов множества по возрастанию
- * @brief sort_data_t
- * @param data [in] - множество
+ * @brief sort_set_t
+ * @param set [in] - множество
  */
-void sort_data_t(data_t *data)
+void sort_set_t(set_t *set)
 {
-    for (int i = 0; i < data->n; i++)
+    for (int i = 0; i < set->n; i++)
     {
-        for (int j = 0; j < data->n - 1; j++)
+        for (int j = 0; j < set->n - 1; j++)
         {
-            if (data->mas[j] > data->mas[j+1])
+            if (set->mas[j] > set->mas[j+1])
             {
-                int t = data->mas[j];
-                data->mas[j] = data->mas[j+1];
-                data->mas[j+1] = t;
+                int t = set->mas[j];
+                set->mas[j] = set->mas[j+1];
+                set->mas[j+1] = t;
             }
         }
     }
@@ -442,25 +459,25 @@ void sort_data_t(data_t *data)
 
 /**
   Печать множества в отсортированном виде
- * @brief print_data_t
- * @param data[in] - множество
+ * @brief print_set_t
+ * @param set[in] - множество
  */
-void print_data_t(data_t *data)
+void print_set_t(set_t *set)
 {
-	if (!data)
-		return;
-	if (data->n == 0)
-	{
-		printf("[]\n");
-		return;
-	}
-    sort_data_t(data);
-    printf("[");
-    for (int i = 0; i < data->n - 1; i++)
+    if (!set)
+        return;
+    if (set->n == 0)
     {
-        printf("%d,", data->mas[i]);
+        printf("[]\n");
+        return;
     }
-    printf("%d",data->mas[data->n-1]);
+    sort_set_t(set);
+    printf("[");
+    for (int i = 0; i < set->n - 1; i++)
+    {
+        printf("%d,", set->mas[i]);
+    }
+    printf("%d",set->mas[set->n-1]);
     printf("]\n");
 }
 
@@ -473,65 +490,65 @@ void print_data_t(data_t *data)
  */
 int char_to_int(const char *line, int *count)
 {
-	int i = 0;
-	while(line[i] >= '0' && line[i] <= '9')
-	{
-		i++;
-	}
-	*count = i;
+    int i = 0;
+    while(line[i] >= '0' && line[i] <= '9')
+    {
+        i++;
+    }
+    *count = i;
 
-	int num = 0;
-	for (int j = 0; j < i; j++)
-	{
-		num += (line[i-j-1] - '0') * pow(10, j);
-	}
-	return num;
+    int num = 0;
+    for (int j = 0; j < i; j++)
+    {
+        num += (line[i-j-1] - '0') * pow(10, j);
+    }
+    return num;
 }
 
 /**
   Выделение памяти под множество размера count
- * @brief alloc_data_t
+ * @brief alloc_set_t
  * @param count [in] - размер множества
  * @return Возвращает новый элемент-множество
  */
-data_t *alloc_data_t(const size_t count)
+set_t *alloc_set_t(const size_t count)
 {
-	data_t *new = (data_t *)malloc(sizeof(struct data));
+    set_t *new = (set_t *)malloc(sizeof(struct set));
 
     if (count == 0) //если пустое множество
-	{
-		new->mas = NULL;
-		new->n = 0;
-		return new;
+    {
+        new->mas = NULL;
+        new->n = 0;
+        return new;
     }
 
-	int *buf = NULL;
-	if (new)
-	{
-		buf = malloc(count * sizeof(int));
-		if (!buf)
-		{
-			free(new);
-			return NULL;
-		}
-	}
-	new->mas = buf;
-	new->n = count;
-	return new;
+    int *buf = NULL;
+    if (new)
+    {
+        buf = malloc(count * sizeof(int));
+        if (!buf)
+        {
+            free(new);
+            return NULL;
+        }
+    }
+    new->mas = buf;
+    new->n = count;
+    return new;
 }
 
 /**
   Освобождение памяти из-под множества
- * @brief free_data_t
- * @param data[in] - множество
+ * @brief free_set_t
+ * @param set[in] - множество
  */
-void free_data_t(data_t *data)
+void free_set_t(set_t *set)
 {
-	if (!data)
-		return;
-	if (data->mas)
-		free(data->mas);
-	free(data);
+    if (!set)
+        return;
+    if (set->mas)
+        free(set->mas);
+    free(set);
 }
 
 /**
@@ -542,273 +559,266 @@ void free_data_t(data_t *data)
  */
 size_t count_nums(const char *line)
 {
-	size_t count = 0;
-	size_t i = 0;
+    size_t count = 0;
+    size_t i = 0;
     if ( !line )
     {
         return 0;
     }
 
-	while(line[i] != ']')
-	{
+    while(line[i] != ']')
+    {
         //если нашли число
-		if (line[i] >= '0' && line[i] <= '9')
-		{
+        if (line[i] >= '0' && line[i] <= '9')
+        {
             //считаем число до конца
-		    while(line[i] >= '0' && line[i] <= '9')
-		    {
-		    	i++;
-	    	}
-	    	count++;
-			i--;
-		}
-		i++;
-	}
-	return count;
+            while(line[i] >= '0' && line[i] <= '9')
+            {
+                i++;
+            }
+            count++;
+            i--;
+        }
+        i++;
+    }
+    return count;
 }
 
 /**
   Создание множества из строки
- * @brief create_data
+ * @brief create_set
  * @param line[in] - строка
  * @return ВОзвращает указатель на множество
  */
-data_t *create_data(const char *line)
+set_t *create_set(const char *line)
 {
-	size_t count = count_nums(line);
+    size_t count = count_nums(line);
     if (!line)
         return NULL;
-    data_t *new = alloc_data_t(count); //count = 0 проверяется внутри функции
-	if (!new)
-		return NULL;
-	
-	size_t i = 0;
-    count = 0;
-	while(line[i] != ']')
-	{
-		if (line[i] >= '0' && line[i] <= '9')
-		{
-		    int j = 0;
-            int a = char_to_int(line + i, &j);
-			i += j - 1;
-			new->mas[count] = a;
-			count++;
-		}
-		i++;
-	}
-	return new;
-}
-///DATA
-////////////////////////////////////////////////////////////////
+    set_t *new = alloc_set_t(count); //count = 0 проверяется внутри функции
+    if (!new)
+        return NULL;
 
-//////////////////////////////////////////////////////////////////
+    size_t i = 0;
+    count = 0;
+    while(line[i] != ']')
+    {
+        if (line[i] >= '0' && line[i] <= '9')
+        {
+            int j = 0;
+            int digit = char_to_int(line + i, &j);
+            i += j - 1;
+            new->mas[count] = digit;
+            count++;
+        }
+        i++;
+    }
+    return new;
+}
+
 /// actions
 
 /**
   Проверка, находится ли элемент в множестве
- * @brief is_in
- * @param data[in] - множество
+ * @brief is_in_set
+ * @param set[in] - множество
  * @param n[in] - элемент
  * @return 1 - находится, 0 - не находится
  */
-int is_in(data_t *data, const int n)
+int is_in_set(set_t *set, const int n)
 {
-	for(size_t i = 0; i < data->n; i++)
-	{
-		if (data->mas[i] == n)
-			return 1;
-	}
-	return 0;
+    for(size_t i = 0; i < set->n; i++)
+    {
+        if (set->mas[i] == n)
+            return 1;
+    }
+    return 0;
 }
 
 /**
   Объединение
  * @brief do_union
- * @param d1[in] - 1 множество
- * @param d2[in] - 2 множество
+ * @param set1[in] - 1 множество
+ * @param set2[in] - 2 множество
  * @return результат операции
  */
-data_t *do_union(data_t *d1, data_t *d2)
+set_t *do_union(set_t *set1, set_t *set2)
 {
-    if (!d1 || !d2)
+    if (!set1 || !set2)
     {
         return NULL;
     }
-	int count = 0;
-	for (size_t i = 0 ; i < d2->n; i++)
-	{
-		if (!is_in(d1,d2->mas[i]))
-			count++;
-	}
-	
-	data_t *new = alloc_data_t(count + d1->n);
-	if (!new)
-		return NULL;
-	
-	count = 0;
-	for (size_t i = 0 ; i < d1->n; i++)
-	{
-		new->mas[count] = d1->mas[i];
-		count++;
-	}
-	for (size_t i = 0 ; i < d2->n; i++)
-	{
-		if (!is_in(d1,d2->mas[i]))
-		{
-			new->mas[count] = d2->mas[i];
-			count++;
-		}	
-	}
-	
-	return new;
+    int count = 0;
+    for (size_t i = 0 ; i < set2->n; i++)
+    {
+        if (!is_in_set(set1,set2->mas[i]))
+            count++;
+    }
+
+    set_t *new = alloc_set_t(count + set1->n);
+    if (!new)
+        return NULL;
+
+    count = 0;
+    for (size_t i = 0 ; i < set1->n; i++)
+    {
+        new->mas[count] = set1->mas[i];
+        count++;
+    }
+    for (size_t i = 0 ; i < set2->n; i++)
+    {
+        if (!is_in_set(set1,set2->mas[i]))
+        {
+            new->mas[count] = set2->mas[i];
+            count++;
+        }
+    }
+
+    return new;
 }
 
 /**
   Пересечение
  * @brief do_intersection
- * @param d1[in] - 1 множество
- * @param d2[in] - 2 множество
+ * @param set1[in] - 1 множество
+ * @param set2[in] - 2 множество
  * @return результат операции
  */
-data_t *do_intersection(data_t *d1, data_t *d2)
+set_t *do_intersection(set_t *set1, set_t *set2)
 {
-    if (!d1 || !d2)
+    if (!set1 || !set2)
     {
         return NULL;
     }
-	int count = 0;
-	for (size_t i = 0 ; i < d2->n; i++)
-	{
-		if (is_in(d1,d2->mas[i]))
-			count++;
-	}
-	
-	data_t *new = alloc_data_t(count);
-	if (!new)
-		return NULL;
-	
-	count = 0;
-	for (size_t i = 0 ; i < d2->n; i++)
-	{
-		if (is_in(d1,d2->mas[i]))
-		{
-			new->mas[count] = d2->mas[i];
-			count++;
-		}	
-	}
-	return new;
+    int count = 0;
+    for (size_t i = 0 ; i < set2->n; i++)
+    {
+        if (is_in_set(set1,set2->mas[i]))
+            count++;
+    }
+
+    set_t *new = alloc_set_t(count);
+    if (!new)
+        return NULL;
+
+    count = 0;
+    for (size_t i = 0 ; i < set2->n; i++)
+    {
+        if (is_in_set(set1,set2->mas[i]))
+        {
+            new->mas[count] = set2->mas[i];
+            count++;
+        }
+    }
+    return new;
 }
 
 /**
   Вычитание
  * @brief do_subtraction
- * @param d1[in] - 1 множество
- * @param d2[in] - 2 множество
+ * @param set1[in] - 1 множество
+ * @param set2[in] - 2 множество
  * @return результат операции
  */
-data_t *do_subtraction(data_t *d1, data_t *d2)
+set_t *do_subtraction(set_t *set1, set_t *set2)
 {
-    if (!d1 || !d2)
+    if (!set1 || !set2)
     {
         return NULL;
     }
-	int count = 0;
-	for (size_t i = 0 ; i < d1->n; i++)
-	{
-		if (!is_in(d2,d1->mas[i]))
-			count++;
-	}
-	data_t *new = alloc_data_t(count);
-	if (!new)
-		return NULL;
-	count = 0;
+    int count = 0;
+    for (size_t i = 0 ; i < set1->n; i++)
+    {
+        if (!is_in_set(set2,set1->mas[i]))
+            count++;
+    }
+    set_t *new = alloc_set_t(count);
+    if (!new)
+        return NULL;
+    count = 0;
 
-	for (size_t i = 0 ; i < d1->n; i++)
-	{
-		if (!is_in(d2,d1->mas[i]))
-		{
-			new->mas[count] = d1->mas[i];
-			count++;
-		}	
-	}
-	
-	return new;
+    for (size_t i = 0 ; i < set1->n; i++)
+    {
+        if (!is_in_set(set2,set1->mas[i]))
+        {
+            new->mas[count] = set1->mas[i];
+            count++;
+        }
+    }
+
+    return new;
 }
 
-///actions
-//////////////////////////////////////////////////
-
-/////////////////////////////////////////////////
-/////EL_T
+/////element_T
 /**
   Освобождение памяти из-под списка
- * @brief free_sp
- * @param sp[in] - голова списка
+ * @brief free_spisok
+ * @param spisok[in] - голова списка
  */
-void free_sp(el_t *sp)
+void free_spisok(element_t *spisok)
 {
-    if (!sp)
+    if (!spisok)
         return;
 
-    while (sp)
+    while (spisok)
     {
-        free_data_t(sp->data);
-        el_t *tmp = sp;
-        sp = sp->next;
+        free_set_t(spisok->set);
+        element_t *tmp = spisok;
+        spisok = spisok->next;
         free(tmp);
     }
 }
 
 /**
   Выделение памяти под один элемент списка
- * @brief create_el
- * @param el[in] - элемент
- * @param data[in] - указатель на множество
+ * @brief create_element
+ * @param element[in] - элемент
+ * @param set[in] - указатель на множество
  * @return указатель на созданный элемент
  */
-el_t *create_el(char el, data_t *data)
+element_t *create_element(char element, set_t *set)
 {
-	el_t *new = malloc(sizeof(el_t));
-	if (new)
-	{
-		new->el = el;
-		new->data = data;
-		new->next = NULL;
-		new->prev = NULL;
-	}
-	return new;
+    element_t *new = malloc(sizeof(element_t));
+    if (new)
+    {
+        new->element = element;
+        new->set = set;
+        new->next = NULL;
+        new->prev = NULL;
+    }
+    return new;
 }
 
 /**
   Освобождение одного элемента списка
- * @brief free_el_t
- * @param el[in] - элемент списка
+ * @brief free_element_t
+ * @param element[in] - элемент списка
  */
-void free_el_t(el_t *el)
+void free_element_t(element_t *element)
 {
-	if (!el)
-		return;
-	free(el);
+    if (!element)
+        return;
+    free(element);
 }
 
 /**
   Удаление элемента из списка
- * @brief delete_el_t
- * @param el [in] - удаляемый элемент
+ * @brief delete_element_t
+ * @param element [in] - удаляемый элемент
  * @return следующий элемент
  */
-el_t *delete_el_t(el_t *el)
+element_t *delete_element_t(element_t *element)
 {
-    if (el->next)
+    if (element->next)
     {
-        el->next->prev = el->prev;
+        element->next->prev = element->prev;
     }
-    el->prev->next = el->next;
-    el_t *tmp = el;
-    el = el->next;
-    free_data_t(tmp->data);
-    free_el_t(tmp);
-    return el;
+    element->prev->next = element->next;
+    element_t *tmp = element;
+    element = element->next;
+    free_set_t(tmp->set);
+    free_element_t(tmp);
+    return element;
 }
 
 
@@ -818,87 +828,82 @@ el_t *delete_el_t(el_t *el)
  * @param line [in] строка
  * @return указатель на началло списка
  */
-el_t *make_spisok_from_line(const char *line)
+element_t *make_spisok_from_line(const char *line)
 {
-	el_t *head = create_el('$',NULL);
-	el_t *el = head;
-	size_t i = 0;
-	char sym[] = "^U\\()";
-	size_t l = strlen(sym);
-	size_t n = strlen(line);
-	if (line[0] == '[')
-	{
-		data_t *data = NULL;
-		if (line[0] == '[')
-		{
-		    data = create_data(line);
-	    }
-	    el->data = data;
-	    i++;
-	}
-	for (i=i; i < n ; i++)
-	{
-		for (size_t j = 0; j < l; j++)
-		{
-		    if (line[i] == sym[j])
-		    {
-		    	data_t *data = NULL;
-				if (i+1 > n)
-					break;
-		    	if (line[i+1] == '[')
-		    	{
-		     		data = create_data(line+i+1);
-	    		}
-	    	    el_t *new = create_el(line[i], data);
-	    		if (!new)
-	    		{
-                    free_sp(head);
+    element_t *head = create_element('$',NULL);
+    element_t *element = head;
+    size_t i = 0;
+    char actions[] = "^U\\()";
+    size_t actions_len = strlen(actions);
+    size_t line_len = strlen(line);
+    if (line[0] == '[')
+    {
+        set_t *set = NULL;
+        if (line[0] == '[')
+        {
+            set = create_set(line);
+        }
+        element->set = set;
+        i++;
+    }
+    for (i=i; i < line_len ; i++)
+    {
+        for (size_t j = 0; j < ; j++)
+        {
+            if (line[i] == actions[j])
+            {
+                set_t *set = NULL;
+                if (i+1 > n)
+                    break;
+                if (line[i+1] == '[')
+                {
+                     set = create_set(line+i+1);
+                }
+                element_t *new = create_element(line[i], set);
+                if (!new)
+                {
+                    free_spisok(head);
                     return NULL;
-	    		}
-	    		el->next = new;
-	    		new->prev = el;
-	    		el = new;
-				break;
-	    	}
-		}
-	}
-	return head;
+                }
+                element->next = new;
+                new->prev = element;
+                element = new;
+                break;
+            }
+        }
+    }
+    return head;
 }
 
-////EL_T
-///////////////////////////////////
-
-
-///////////////////////////////////////////
-///process
+///calculate
 
 /**
   Поиск круглых скобочек
- * @brief find_bracets
+ * @brief find_brackets
  * @param head[in] - начало списка
  * @param open[out] - указатель на открывающую скобку
  * @param close[out] - указатель на закрывающую скобку
  * @return 1 - если найдены, 0 - не найдены
  */
-int find_bracets(el_t *head, el_t **open, el_t **close)
+int find_brackets(element_t *head, element_t **open, element_t **close)
 {
-	if (!head)
-		return 0;
-	
-	while(head != NULL)
-	{
-		if (head->el == '(')
-		{
-			*open = head;
-		}
-		else if (head->el == ')')
-		{
-			*close = head;
-			return 1;
-		}
-		head = head->next;
-	}
-	return 0;
+    if (!head)
+        return 0;
+
+    while(head != NULL)
+    {
+        if (head->element == '(')
+        {
+            *open = head;
+        }
+        else if (head->element == ')')
+        {
+            *close = head;
+            return 1;
+        }
+        head = head->next;
+    }
+    return 0;
 }
 
 /**
@@ -908,82 +913,82 @@ int find_bracets(el_t *head, el_t **open, el_t **close)
  * @param close [in] - закрывающая скобка
  * @param action [in] - действие, которое нужно выполнить
  */
-int make_action_in_brackets(el_t *open, el_t *close, char action)
+int make_action_in_brackets(element_t *open, element_t *close, char action)
 {
-	el_t *el = open;
-	data_t *buf;
-	while (el != close)
-	{
-		if (el->el == action)
-		{
-			if (action == 'U')
-			{
-				buf = do_union(el->prev->data, el->data);
-			}
-			else if (action == '^')
-			{
-				buf = do_intersection(el->prev->data, el->data);
-			}
-			else
-			{
-				buf = do_subtraction(el->prev->data, el->data);
-			}
-			if (!buf)
+    element_t *element = open;
+    while (element != close)
+    {
+        if (element->element == action)
+        {
+            set_t *buf;
+            if (action == 'U')
+            {
+                buf = do_union(element->prev->set, element->set);
+            }
+            else if (action == '^')
+            {
+                buf = do_intersection(element->prev->set, element->set);
+            }
+            else
+            {
+                buf = do_subtraction(element->prev->set, element->set);
+            }
+            if (!buf)
                 return ERR_MEMORY;
-			free_data_t(el->prev->data);
-			el->prev->data = buf; 
-            el = delete_el_t(el);
-		}
-		else
-		{
-			el = el->next;
-		}
-	}
+            free_set_t(element->prev->set);
+            element->prev->set = buf;
+            element = delete_element_t(element);
+        }
+        else
+        {
+            element = element->next;
+        }
+    }
     return OK;
 }
 
 /**
   Выполняет вычисление ответа
- * @brief process
+ * @brief calculate
  * @param head[in]
  * @param otvet[out]
  * @return
  */
-int process(el_t *head, data_t **otvet)
+int calculate(element_t *head, set_t **otvet)
 {
-	el_t *open = NULL;
-	el_t *close = NULL;
-	char sym[] = "^U\\";
-	size_t l = strlen(sym);
+    element_t *open = NULL;
+    element_t *close = NULL;
+    char actions[] = "^U\\";
+    size_t actions_len = strlen(actions);
     int rc = OK;
-	
-	while(find_bracets(head, &open, &close))
-	{
-		for (size_t i = 0; i < l; i++)
-		{
-            rc = make_action_in_brackets(open, close, sym[i]);
+
+    while(find_brackets(head, &open, &close))
+    {
+        for (size_t i = 0; i < actions_len; i++)
+        {
+            rc = make_action_in_brackets(open, close, actions[i]);
             if (rc != OK)
                  return rc;
-		}
-		open->prev->data = open->data;
-		open->prev->next = close->next;
-		if (close->next)
-		{
-		     close->next->prev = open->prev;
-		}
-		free_el_t(open);
-		free_el_t(close);
-		open = NULL;
-		close = NULL;
-	}
-	
-	for (size_t i = 0; i < l; i++)
-	{
-		make_action_in_brackets(head, NULL, sym[i]);
-	}
-	*otvet = head->data;
-    //free_el_t(head);
+        }
+        open->prev->set = open->set;
+        open->prev->next = close->next;
+        if (close->next)
+        {
+             close->next->prev = open->prev;
+        }
+        free_element_t(open);
+        free_element_t(close);
+        open = NULL;
+        close = NULL;
+    }
+
+    for (size_t i = 0; i < actions_len; i++)
+    {
+        make_action_in_brackets(head, NULL, actions[i]);
+    }
+    *otvet = head->set;
+    //free_element_t(head);
     return OK;
 }
-///process
+///calculate
 ////////////////////////////////
