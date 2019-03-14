@@ -111,39 +111,39 @@ int main(void)
     if (rc == 1)
     {
         free(line);
-        printf("[error]");
+        printf("[error]\n");
         return OK;
     }
 
     //проверим проавильность строки
-    if (check_line(line))
+    if (!check_line(line))
+	{
+		free(line);
+		printf("[error]\n");
+		return OK;
+	}
+    // создадим список с значищами элементами из строки
+    element_t *spisok = NULL;
+    spisok = make_spisok_from_line(line);
+    if (!spisok)
     {
-        // создадим список с значищами элементами из строки
-        element_t *spisok = NULL;
-        spisok = make_spisok_from_line(line);
-        if (spisok)
-        {
-            set_t *otvet = NULL;
-            rc = calculate(spisok, &otvet);
-            if (rc == OK)
-            {
-                print_set_t(otvet);
-            }
-            else
-            {
-                  printf("[error]\n");
-            }
-            free_spisok(spisok);
-        }
-        else
-        {
-            printf("[error]\n");
-        }
+		printf("[error]\n");
+		free(line);
+		return OK;
+	}
+	
+    set_t *otvet = NULL;
+    rc = calculate(spisok, &otvet);
+    if (rc == OK)
+    {
+        print_set_t(otvet);
     }
     else
     {
         printf("[error]\n");
     }
+    free_spisok(spisok);
+   
     free(line);
     return OK;
 }
@@ -848,12 +848,12 @@ element_t *make_spisok_from_line(const char *line)
     }
     for (i=i; i < line_len ; i++)
     {
-        for (size_t j = 0; j < ; j++)
+        for (size_t j = 0; j < actions_len; j++)
         {
             if (line[i] == actions[j])
             {
                 set_t *set = NULL;
-                if (i+1 > n)
+                if (i+1 > line_len)
                     break;
                 if (line[i+1] == '[')
                 {
