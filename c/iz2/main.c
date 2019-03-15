@@ -63,7 +63,6 @@ struct element
     element_t *prev;
 };
 
-int char_to_int(const char *line, int *count);
 void sort_set_t(set_t *set);
 void print_set_t(set_t *set);
 void free_set_t(set_t *set);
@@ -71,9 +70,9 @@ size_t count_nums(const char *line);
 set_t *alloc_set_t(const size_t count);
 set_t *create_set(const char *line);
 
-char *my_strdup(const char *str);
 size_t my_getline(char **line, size_t *n, FILE *stream);
 
+int is_action(const char *actions, char symbol);
 int is_correct_in_square_brackets(const char *line);
 int is_correct_line(const char *line);
 void delete_spaces(char *str);
