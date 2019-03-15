@@ -33,7 +33,6 @@ return -1, exit(1) и т.п. Даже если обнаружилась кака
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
-#include<math.h>
 
 #define START_BUFFER 16
 #define BUF_SIZE 128
@@ -149,33 +148,6 @@ int main(void)
 }
 
 //io
-/**
-   Создает дубликат строки(требуется освобождение памяти после вызова)
- * @brief my_strdup
- * @param str [in] - строка
- * @return Возвращает новую строку
- */
-char *my_strdup(const char *str)
-{
-    if (!str)
-        return NULL;
-
-    size_t len = strlen(str);
-
-    char *new = malloc((len + 1) * sizeof(char));
-    if (!new)
-        return NULL;
-
-    char *buf = memcpy(new, str, len + 1);
-    if (!buf)
-    {
-        free(new);
-        return NULL;
-    }
-    new = buf;
-
-    return new;
-}
 
 /**
   Считывание одной строки и выделение под нее необходимой памяти
@@ -194,7 +166,7 @@ size_t my_getline(char **line, size_t *n, FILE *stream)
     }
 
     size_t   required_memory_size = 0;
-    size_t len = 0;
+    int readed_len = 0;
     size_t alloc_size = 0;//выделенный размер памяти - 1
     char buf[BUF_SIZE + 1];
     char *str = NULL;
@@ -202,10 +174,10 @@ size_t my_getline(char **line, size_t *n, FILE *stream)
     //Считываем в буфер часть строки, пока не конец файла
     while (fgets(buf, BUF_SIZE + 1, stream))
     {
-        len = strlen(buf);
-        if (!len)
+        readed_len = strlen(buf);
+        if (!readed_len)
             break;
-        required_memory_size += len;
+        required_memory_size += readed_len;
 
         // если необходимо выделить еще память
         if (  required_memory_size > alloc_size)
@@ -221,7 +193,7 @@ size_t my_getline(char **line, size_t *n, FILE *stream)
             alloc_size = required_memory_size;
         }
 
-        strncpy(str + required_memory_size - len, buf, len * sizeof(char));
+        strncpy(str + required_memory_size - readed_len, buf, readed_len * sizeof(char));
         //Если считалась вся строка, заканчиваем считывание.
         if (str[required_memory_size - 1] == '\n')
         {
@@ -482,30 +454,6 @@ void print_set_t(set_t *set)
 }
 
 /**
-  Переводит число в символах в формат int
- * @brief char_to_int
- * @param line[in] - строка
- * @param count[out] - количество прочитанных символов
- * @return полученное число
- */
-int char_to_int(const char *line, int *count)
-{
-    int i = 0;
-    while(line[i] >= '0' && line[i] <= '9')
-    {
-        i++;
-    }
-    *count = i;
-
-    int num = 0;
-    for (int j = 0; j < i; j++)
-    {
-        num += (line[i-j-1] - '0') * pow(10, j);
-    }
-    return num;
-}
-
-/**
   Выделение памяти под множество размера count
  * @brief alloc_set_t
  * @param count [in] - размер множества
@@ -514,6 +462,8 @@ int char_to_int(const char *line, int *count)
 set_t *alloc_set_t(const size_t count)
 {
     set_t *new = (set_t *)malloc(sizeof(struct set));
+    if (!new)
+        return NULL;
 
     if (count == 0) //если пустое множество
     {
@@ -522,15 +472,11 @@ set_t *alloc_set_t(const size_t count)
         return new;
     }
 
-    int *buf = NULL;
-    if (new)
+    int *buf = malloc(count * sizeof(int));
+    if (!buf)
     {
-        buf = malloc(count * sizeof(int));
-        if (!buf)
-        {
-            free(new);
-            return NULL;
-        }
+        free(new);
+        return NULL;
     }
     new->mas = buf;
     new->n = count;
@@ -605,9 +551,12 @@ set_t *create_set(const char *line)
     {
         if (line[i] >= '0' && line[i] <= '9')
         {
-            int j = 0;
-            int digit = char_to_int(line + i, &j);
-            i += j - 1;
+            int digit = atoi(line+i);
+            while(line[i] >= '0' && line[i] <= '9')
+            {
+                i++;
+            }
+            i--;
             new->mas[count] = digit;
             count++;
         }
@@ -839,14 +788,11 @@ element_t *make_spisok_from_line(const char *line)
     if (line[0] == '[')
     {
         set_t *set = NULL;
-        if (line[0] == '[')
-        {
-            set = create_set(line);
-        }
+        set = create_set(line);
         element->set = set;
         i++;
     }
-    for (i=i; i < line_len ; i++)
+    for (; i < line_len ; i++)
     {
         for (size_t j = 0; j < actions_len; j++)
         {
