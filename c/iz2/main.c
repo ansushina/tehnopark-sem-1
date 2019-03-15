@@ -34,15 +34,10 @@ return -1, exit(1) и т.п. Даже если обнаружилась кака
 #include<stdlib.h>
 #include<string.h>
 
-#define START_BUFFER 16
 #define BUF_SIZE 128
-#define STEP 2
 
 #define OK 0
-#define ERR_IO 1
-#define ERR 2
-#define ERR_MEMORY 3
-#define ERR_NO_CORRECT 4
+#define ERR_MEMORY 1
 
 typedef struct set set_t;
 struct set
