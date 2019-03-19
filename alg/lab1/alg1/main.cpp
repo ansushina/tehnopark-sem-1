@@ -33,15 +33,15 @@ int read_all(int **a_mas, int **b_mas, int &n)
     {
         return ERR_IO;
     }
-    int *a = (int *)malloc(n * sizeof(int));
+    int *a = new int[n];
     if (!a)
     {
         return ERR_MEMORY;
     }
-    int *b = (int *)malloc(n * sizeof(int));
+    int *b = new int[n];
     if (!b)
     {
-        free(a);
+        delete[] a;
         return ERR_MEMORY;
     }
 
@@ -49,8 +49,8 @@ int read_all(int **a_mas, int **b_mas, int &n)
     {
         if (scanf("%d", a + i) != 1)
         {
-            free(a);
-            free(b);
+            delete[] a;
+            delete[] b;
             return ERR_IO;
         }
     }
@@ -58,8 +58,8 @@ int read_all(int **a_mas, int **b_mas, int &n)
     {
         if (scanf("%d", b + i) != 1)
         {
-            free(a);
-            free(b);
+            delete[] a;
+            delete[] b;
             return ERR_IO;
         }
     }
@@ -107,8 +107,8 @@ int main()
         process(a, b, n, imax, jmax);
         //std::cout << imax << " " << jmax << std::endl;
 		printf("%d %d", imax, jmax);
-        free(a);
-        free(b);
+        delete[] a;
+        delete[] b;
     }
     else
     {

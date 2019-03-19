@@ -26,12 +26,6 @@ public:
         {
             resize();
         }
-       /* for (size_t var = 0; var < size; ++var)
-        {
-            printf("%d ", mas[var]);
-
-        }
-        printf("\n");*/
     }
     void pushFront(int i)
     {
@@ -47,12 +41,6 @@ public:
         }
 
         mas[head] = i;
-        /*for (size_t var = 0; var < size; ++var)
-        {
-            printf("%d ", mas[var]);
-
-        }
-        printf("\n");*/
     }
     int popBack()
     {
@@ -62,13 +50,6 @@ public:
         int el = mas[tail];
 
         return el;
-
-        /*for (size_t var = 0; var < size; ++var)
-        {
-            printf("%d ", mas[var]);
-
-        }
-        printf("\n");*/
     }
     int popFront()
     {
@@ -97,7 +78,7 @@ private:
         {
             size = 2;
             mas = new int[2];
-            //mas = (int *)malloc(2*sizeof(int));
+
             return;
         }
 

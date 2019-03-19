@@ -19,6 +19,20 @@ n, m ≤ 10000.
 #define ERR_MEMORY 2
 
 //using namespace std;
+/**
+  Печать массива
+ * @brief print_mas
+ * @param a[in] - массив
+ * @param n[in] - длина массива
+ */
+void print_mas(int *a, int n)
+{
+    for (int i = 0; i < n; i++)
+    {
+        printf("%d ",a[i]);
+    }
+    printf("\n");
+}
 
 /**
   Считывание данных из stdin
@@ -34,15 +48,17 @@ int read_all(int **a_mas, int **b_mas, int &n, int &m)
     {
         return ERR_IO;
     }
-    int *a = (int *)malloc(n * sizeof(int));
+    //int *a = (int *)malloc(n * sizeof(int));
+    int *a = new int[n];
     if (!a)
     {
         return ERR_MEMORY;
     }
-    int *b = (int *)malloc(m * sizeof(int));
+    //int *b = (int *)malloc(m * sizeof(int));
+    int *b = new int[m];
     if (!b)
     {
-        free(a);
+        delete[] a;
         return ERR_MEMORY;
     }
     int rc = OK;
@@ -63,11 +79,10 @@ int read_all(int **a_mas, int **b_mas, int &n, int &m)
     }
     if (rc != OK)
     {
-        free(a);
-        free(b);
+        delete[] a;
+        delete[] b;
         return rc;
     }
-
     *a_mas = a;
     *b_mas = b;
     return rc;
@@ -154,9 +169,11 @@ int bin_find(int *a, int el, int beg, int end)
  */
 int process(int *a, int n, int *b, int m, int **new_mas)
 {
-    int *mas = (int *)malloc(m * sizeof(int));
+    //int *mas = (int *)malloc(m * sizeof(int));
+    int *mas = new int[m];
     if (!mas)
         return ERR_MEMORY;
+
     int beg, end;
 
     for (int i = 0; i < m; i++)
@@ -168,20 +185,7 @@ int process(int *a, int n, int *b, int m, int **new_mas)
     return OK;
 }
 
-/**
-  Печать массива
- * @brief print_mas
- * @param a[in] - массив
- * @param n[in] - длина массива
- */
-void print_mas(int *a, int n)
-{
-    for (int i = 0; i < n; i++)
-    {
-        printf("%d ",a[i]);
-    }
-    printf("\n");
-}
+
 
 int main()
 {
@@ -197,10 +201,10 @@ int main()
         if (rc == OK)
         {
             print_mas(answer, m);
-            free(answer);
+            delete answer;
         }
-        free(a);
-        free(b);
+        delete[] a;
+        delete[] b;
     }
     else
     {
