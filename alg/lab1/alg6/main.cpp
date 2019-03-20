@@ -5,25 +5,26 @@
 #include <stdio.h>
 
 using namespace std;
-
+/**
+  Ставит элемент массива на его место в отстортированном
+ * @brief partition
+ * @param arr [in] - массив
+ * @param l[in] - левый конец отрезка
+ * @param r[in] - правый конец отрезка
+ * @return индекс элемента
+ */
 int partition(int *arr, int l, int r)
 {
-    //for (int i = l; i <= r; i++)
-      //  printf("%d |", arr[i]);
-   // printf("\n");
-    int pivot_index = l + rand() % (r-l + 1);
+    int pivot_index = l + rand() % (r-l + 1); //рандомный индекс
+    //ставим в начало
     int num = arr[l];
     arr[l] = arr[pivot_index];
     arr[pivot_index] = num;
+
     int pivot = arr[l];
-    //printf("%d ===\n", pivot);
-   // for (int i = l; i <= r; i++)
-   //     printf("%d ", arr[i]);
-  //  printf("\n");
 
-    int i = r;
-    int j = r;
-
+    int i = r; // указывает на последний меньше Pivot
+    int j = r; // указывает на начао просмотренного массива
     while (arr[j] > pivot && j >= l)
     {
         j--;
@@ -42,21 +43,21 @@ int partition(int *arr, int l, int r)
        arr[j] = arr[i];
        arr[i] = buf;
        i--;
-      // printf("swap %d %d\n", i+1, j);
-      // for (int i = l; i <= r; i++)
-     //      printf("%d ", arr[i]);
-     //  printf("\n");
-       //j--;
     }
-  int buf = arr[i];
-  arr[i] = pivot;
-  arr[l] = buf;
- // for (int i = l; i <= r; i++)
- //     printf("%d ", arr[i]);
-//  printf("\n");
-//  printf("return %d\n", i);
-  return i;
+    int buf = arr[i];
+    arr[i] = pivot;
+    arr[l] = buf;
+    return i;
 }
+
+/**
+  Ищет k-ую статистику
+ * @brief kth_statistic
+ * @param arr[in] - массив
+ * @param k[in] - индекс статистики
+ * @param len[in] - длина массива
+ * @return k-aя статистика
+ */
 int kth_statistic(int * arr, int k, int len)
 {
     int n = partition(arr,0,len-1);
@@ -77,9 +78,15 @@ int kth_statistic(int * arr, int k, int len)
         }
         n = partition(arr,l,r);
     }
-
 }
 
+/**
+  Чтение массива
+ * @brief read_mas
+ * @param n[out] - длина массива
+ * @param k[out] - номер статистики
+ * @return массив
+ */
 int *read_mas(int &n, int &k)
 {
     if (scanf("%d %d", &n, &k) != 2 || n < 1 || k < 0 || k > n)
@@ -92,21 +99,19 @@ int *read_mas(int &n, int &k)
             delete [] mas;
             return NULL;
         }
-
     }
     return mas;
 }
 
 int main()
 {
-    //cout << "Hello World!" << endl;
     srand(time(nullptr));
-    //int arr[] = {5,2,8,1,9,22};
 
     int n = 0;
     int k = 0;
     int *arr = read_mas(n, k);
 
     std::cout << kth_statistic(arr,k,n) << std::endl;
+    delete [] arr;
     return 0;
 }
