@@ -7,6 +7,9 @@ A[i0] + B[j0] = max {A[i] + B[j], где 0 <= i < n, 0 <= j < n, i <= j}.
 Время работы - O(n).
 n ≤ 100000.
 
+
+
+
 */
 
 //#include <iostream>

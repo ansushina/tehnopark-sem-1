@@ -6,7 +6,7 @@ using namespace std;
 #define OK 0
 #define ERR_IO 1
 #define ERR_MEMORY 2
-#define TEN 10
+#define BYTE 255
 
 /**
   Печать массива
@@ -23,17 +23,6 @@ void print_mas(unsigned long long int *a, int n)
     printf("\n");
 }
 
-int my_pow(int num, int k)
-{
-    if (k == 0)
-        return 1;
-    int pr = num;
-    for (int i = 0; i < k - 1; i++)
-    {
-        num *= pr;
-    }
-    return num;
-}
 /**
   Считывание данных из stdin
  * @brief read_all
@@ -44,7 +33,7 @@ int my_pow(int num, int k)
  */
 int read_all(unsigned long long int **mas, int &n)
 {
-    if (scanf("%d", &n) != 1 || n <= 0)
+    if (scanf("%d", &n) != 1 || n <= 0 || n > 1000000)
     {
         return ERR_IO;
     }
@@ -57,6 +46,7 @@ int read_all(unsigned long long int **mas, int &n)
     {
         if (scanf("%llu", a + i) != 1)
         {
+
             delete[] a;
             return ERR_IO;
         }
@@ -65,43 +55,60 @@ int read_all(unsigned long long int **mas, int &n)
     return OK;
 }
 
-
+/**
+  Сортировка подсчетом для k-ого байта
+ * @brief CountingSort
+ * @param a [in] - массива
+ * @param n [in] - длина массива
+ * @param k [in] - номер байта, по которому сортируем
+ */
 void CountingSort(unsigned long long int *a, int n, int k)
 {
 
-    int c[TEN] = {0};
+    int c[BYTE + 1] = {0};
     for (int i = 0; i < n; i++)
     {
-        ++c[(a[i] % my_pow(10, k+1)/ my_pow(10,k))];
+        ++c[(a[i]>>(k*8))&BYTE];
     }
-    for (int i = 1; i < TEN; i++)
+    for (int i = 1; i < BYTE+1; i++)
     {
         c[i] += c[i-1];
     }
     unsigned long long int *b = new unsigned long long int[n];
     for (int i = n - 1; i >= 0; i--)
     {
-        b[--c[(a[i] % my_pow(10, k+1)/ my_pow(10,k))]] = a[i];
+        b[--c[(a[i]>>(k*8))&BYTE]] = a[i];
     }
     for (int i = 0; i < n; i++)
+    {
         a[i] = b[i];
-
-    //memcpy(a, b ,n * sizeof(int));//странно, но эта функция неправильно пересзаписывает
+    }
     delete[] b;
 }
 
+/**
+  Подсчет количества байтов
+ * @brief count_num_len
+ * @param num[in] - число
+ * @return количество байтов
+ */
 int count_num_len(unsigned long long int num)
 {
     int i = 0;
-    while (num/10 != 0)
+    while(num)
     {
-        num /= 10;
+        num >>= 8;
         i++;
     }
-    i++;
     return i;
 }
 
+/**
+  Побайтовая сортировка LSD
+ * @brief LSD
+ * @param a[in] - массив
+ * @param n[in] - длина массива
+ */
 void LSD(unsigned long long int *a, int n)
 {
     unsigned long long int max = a[0];
@@ -119,9 +126,9 @@ void LSD(unsigned long long int *a, int n)
 }
 
 int main()
-{;
+{
     int n = 0;
-    unsigned long long int *a = NULL;
+    unsigned long long int *a = nullptr;
 
     int rc = read_all(&a, n);
     if (rc != OK)
