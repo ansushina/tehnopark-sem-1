@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+
+	<title>ask!</title>
+</head>
+<body>
+
+<nav class="navbar navbar-light bg-light border-bottom border-info">
+	<a class="navbar-brand ml-2 p-2" href ="#"><strong class = "text-info "><h1>ASKme</h1></strong></a>
+	<form class="form-inline">
+		<input class="form-control mr-sm-1 border border-info" type="search"
+			   placeholder="Search" aria-label="Search">
+		<button class="btn btn-outline-info my-2 my-sm-0" type="submit">Ask!</button>
+	</form>
+	<div class="media">
+		<img src="img/2.jpg" class="mr-3 rounded-circle border border-info" alt="...">
+		<div class="media-body">
+			<h5 class="ml-3">Dr.Pepper</h5>
+			<ul class="nav">
+				<li class="nav-item">
+					<a class="nav-link text-info" href="#">settings</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link text-info" href="#">log out</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+<div class = "container mt-4">
+	<div class = "row">
+		<div class = "col-8">
+			<h3 class = "p-4 text-info">New Question</h3>
+			<form class="needs-validation" novalidate>
+				<div class="form-group row">
+					<label for="Input_title" class = "col-sm-1 col-form-label">Title</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="Input_title"
+							   placeholder="How to build a Moon park?" required>
+						<div class="invalid-feedback">
+							Please input title.
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group row">
+					<label for="Input_text" class = "col-sm-1 col-form-label">Text</label>
+					<div class="col-sm-10">
+						<textarea class="form-control" id="Input_text" rows="15"
+								  placeholder="Place your question here." required></textarea>
+						<div class="invalid-feedback">
+							Please input your text.
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group row">
+					<label for="Input_tags" class = "col-sm-1 col-form-label">Tags</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="Input_tags"
+							   placeholder="moon, park, build" required>
+						<div class="invalid-feedback">
+							Please input tags.
+						</div>
+					</div>
+				</div>
+
+				<div class = "row">
+					<div class = "col-sm-1">
+					</div>
+					<div class="col-sm-10">
+						<button type="submit" class="btn btn-primary mb-2">ASK!</button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<div class = "col-md-4 col-12">
+			<div class = "alert alert-light">
+				<div class = "mb-4">
+					<h2 class = "text-info">Popular Tags:</h2>
+					<ul class="nav">
+						<li class="nav-item">
+							<a class="nav-link text-danger" href="#">Technopark</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-info" href="#">Perl</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-warning" href="#">MySQL</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-success" href="#">Django</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-primary" href="#">Mail.ru</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link text-danger" href="#">firefox</a>
+						</li>
+					</ul>
+				</div>
+				<div>
+					<h2 class = "text-info">Users Top:</h2>
+					<nav class="nav flex-column">
+						<a class="nav-link text-success" href="#">Steve Jobs</a>
+						<a class="nav-link text-success" href="#">Alex Larin</a>
+						<a class="nav-link text-success" href="#">Vasya Pupkin</a>
+						<a class="nav-link text-success" href="#">Dima Ivanov</a>
+					</nav>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="js/jquery-3.3.1.slim.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script>
+	// Example starter JavaScript for disabling form submissions if there are invalid fields
+	(function() {
+		'use strict';
+		window.addEventListener('load', function() {
+			// Fetch all the forms we want to apply custom Bootstrap validation styles to
+			var forms = document.getElementsByClassName('needs-validation');
+			// Loop over them and prevent submission
+			var validation = Array.prototype.filter.call(forms, function(form) {
+				form.addEventListener('submit', function(event) {
+					if (form.checkValidity() === false) {
+						event.preventDefault();
+						event.stopPropagation();
+					}
+					form.classList.add('was-validated');
+				}, false);
+			});
+		}, false);
+	})();
+</script>
+</body>
+</html>

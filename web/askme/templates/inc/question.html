@@ -1,0 +1,33 @@
+
+{% load static %}
+
+<div class="media mb-4">
+<div>
+    <img src="{% static 'img/2.jpg'%}" class="mr-3" alt="...">
+    <div class="border mt-2 text-right"style="width: 64px">123</div>
+    <div class="btn-group btn-group-sm " role="group" aria-label="Basic example">
+        <button type="button" class="btn btn-light btn-sm">&#128077;</button>
+        <button type="button" class="btn btn-light btn-sm">&#128078;</button>
+    </div>
+</div>
+    <div class="media-body">
+        <h5 class="mt-0"{{question.title}}</h5>
+        Cras sit amet nibh libero, in gravida nulla.
+        <a href="{%% url 'question'}">{{question.text}}</a>
+        <ul class="nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#">answer(3)</a>
+            </li>
+            <li class="nav-item">
+                <span class="nav-link disabled mb-0">Tags:</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">black-jeck</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">bender</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
