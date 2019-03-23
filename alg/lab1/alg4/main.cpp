@@ -17,6 +17,15 @@ using namespace std;
 class minHeap{
 public:
     minHeap(): buffer(nullptr), buffer_size(0),size(0) {}
+    explicit minHeap(int *arr, int n)
+    {
+        buffer = arr;
+        size = n;
+        buffer_size = n;
+        /*for (int i = 0; i < n; i++)
+            buffer[i] = arr[i];*/
+        buildHeap();
+    }
     ~minHeap()
     {
         delete [] buffer;
@@ -109,21 +118,25 @@ private:
         buffer = buf;
         buffer_size *= 2;
     }
+    void buildHeap()
+    {
+        for (int i = size/2 - 1; i >= 0; i--)
+            siftDown(i);
+    }
 };
 
 /**
   Чтение элементов и запись их в кучу
  * @brief read_all
- * @param heap [in,out] - куча
  * @param n [in,out] - количество элементов
- * @return
+ * @return куча, с которой работаем
  */
-int read_all(minHeap &heap, int &n)
+minHeap read_all(int &n)
 {
     if (scanf("%d", &n) != 1 || n < 1)
-       return 1;
+       return minHeap();
 
-    for (int i = 0; i < n; i++)
+    /*for (int i = 0; i < n; i++)
     {
         int num = 0;
         if (scanf("%d", &num) != 1)
@@ -131,8 +144,19 @@ int read_all(minHeap &heap, int &n)
             return 1;
         }
         heap.push(num);
+    }*/
+
+    int *mas = new int[n];
+    for (int i = 0; i < n; i++)
+    {
+        if (scanf("%d", &mas[i]) != 1)
+        {
+            delete[] mas;
+            return minHeap();
+        }
     }
-    return 0;
+
+    return minHeap(mas,n);
 }
 
 /**
@@ -168,8 +192,8 @@ int process(minHeap &heap)
 int main()
 {
     int mas_len = 0;
-    minHeap myheap;
-    if (read_all(myheap,mas_len))
+    minHeap myheap = read_all(mas_len);
+    if (myheap.isEmpty())
     {
         printf("[error]");
         return 0;
