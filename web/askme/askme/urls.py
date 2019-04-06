@@ -21,7 +21,11 @@ from asker import views
 urlpatterns = [
     #url(r'^admin/', admin.site.urls),
     url('login/', views.login, name = 'login'),
-    url('', views.index, name = 'index'),
-    url('question/<int:qid>/', views.question,name = 'question')
-    
+    url('register/', views.register, name = 'register'),
+    url('settings/', views.settings, name = 'settings'),
+    url('ask/', views.ask, name = 'ask'),
+    url(r'^question/(?P<qid>\d+)/$', views.question ,name = 'question'),
+    url(r'^tag/(?P<tagname>\w+)/$', views.tag ,name = 'tag'),
+    url('hot/', views.hot, name = 'hot'),
+    url('', views.index, name = 'index'),   
 ]

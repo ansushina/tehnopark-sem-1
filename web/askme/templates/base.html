@@ -1,4 +1,4 @@
-{%load static%}
+{% load static%}
 
 <!doctype html>
 <html lang="en">
@@ -9,24 +9,25 @@
 
 	<!-- Bootstrap CSS -->
 	<link rel="stylesheet" href="{%static 'css/bootstrap.min.css' %}">
-	<title>Base_log!</title>
+	<title>ASKme</title>
 </head>
 <body>
 
 <nav class="navbar navbar-light bg-light border-bottom border-info">
-    <a class="navbar-brand ml-2 p-2" href ="#"><strong class = "text-info "><h1>ASKme</h1></strong></a>
+    <a class="navbar-brand ml-2 p-2" href ="/"><strong class = "text-info "><h1>ASKme</h1></strong></a>
     <form class="form-inline">
         <input class="form-control mr-sm-1 border border-info" type="search"
                placeholder="Search" aria-label="Search">
         <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Ask!</button>
     </form>
+    {% if login_flag %}
 	<div class="media">
-		<img src="img/2.jpg" class="mr-3 rounded-circle border border-info" alt="...">
+		<img src="{% static 'img/2.jpg' %}" class="mr-3 rounded-circle border border-info" alt="...">
 		<div class="media-body">
 			<h5 class="ml-3">Dr.Pepper</h5>
 			<ul class="nav">
 				<li class="nav-item">
-					<a class="nav-link text-info" href="#">settings</a>
+					<a class="nav-link text-info" href="{% url 'settings' %}">settings</a>
 				</li>
 				<li class="nav-item">
 					<a class="nav-link text-info" href="#">log out</a>
@@ -34,6 +35,18 @@
 			</ul>
 		</div>
 	</div>
+    {% else %}
+    <div class="media mr-5">
+		<ul class="nav mr-5">
+			<li class="nav-item">
+				<a class="nav-link text-info" href="{% url 'login'  %}">log in</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link text-info" href="{% url 'register' %}">register</a>
+			</li>
+		</ul>
+	</div>
+    {% endif %}
 </nav>
 
 <div class = "container mt-4">
@@ -49,33 +62,21 @@
                 <div class = "mb-4">
                     <h2 class = "text-info">Popular Tags:</h2>
                     <ul class="nav">
+                        {% asker_tags %}
+                        {%for tag in popular_tags%}
                         <li class="nav-item">
-                            <a class="nav-link text-danger" href="#">Technopark</a>
+                            <a class="nav-link text-warning" href="{% url 'tag' tag.tagname %}">{{tag.tagname}}</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-info" href="#">Perl</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-warning" href="#">MySQL</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-success" href="#">Django</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-primary" href="#">Mail.ru</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-danger" href="#">firefox</a>
-                        </li>
+                        {%endfor%}
+                       
                     </ul>
                 </div>
                 <div>
                     <h2 class = "text-info">Users Top:</h2>
                     <nav class="nav flex-column">
-                        <a class="nav-link text-success" href="#">Steve Jobs</a>
-                        <a class="nav-link text-success" href="#">Alex Larin</a>
-                        <a class="nav-link text-success" href="#">Vasya Pupkin</a>
-                        <a class="nav-link text-success" href="#">Dima Ivanov</a>
+                        {%for user in users_top%}
+                        <a class="nav-link text-success" href="#">{{user.nickname}}</a>
+                        {%endfor%}
                     </nav>
                 </div>
             </div>
@@ -91,5 +92,25 @@
 <script src="{%static 'js/jquery-3.3.1.slim.min.js' %}"></script>
 <script src="{%static 'js/popper.min.js' %}"></script>
 <script src="{%static 'js/bootstrap.min.js' %}"></script>
+    <script>
+	// Example starter JavaScript for disabling form submissions if there are invalid fields
+	(function() {
+		'use strict';
+		window.addEventListener('load', function() {
+			// Fetch all the forms we want to apply custom Bootstrap validation styles to
+			var forms = document.getElementsByClassName('needs-validation');
+			// Loop over them and prevent submission
+			var validation = Array.prototype.filter.call(forms, function(form) {
+				form.addEventListener('submit', function(event) {
+					if (form.checkValidity() === false) {
+						event.preventDefault();
+						event.stopPropagation();
+					}
+					form.classList.add('was-validated');
+				}, false);
+			});
+		}, false);
+	})();
+</script>
 </body>
 </html>
