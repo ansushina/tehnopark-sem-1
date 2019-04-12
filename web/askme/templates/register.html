@@ -3,76 +3,76 @@
 {% load static %}
 
 {% block content %}
-<h3 class ="p-4 text-info">Registration</h3>
-<form class="needs-validation" novalidate>
-    <div class="form-group row mb-4">
-        <label for="login_input" class = "col-sm-3 col-form-label">Login</label>
-        <div class="col-sm-6">
-            <input type="text" class="form-control" id="login_input"
-                   placeholder="input login" maxlength="32" required>
-            <div class="invalid-feedback">
-                Please input login.
+    <h3 class ="p-4 text-info">Registration</h3>
+    <form class="needs-validation" novalidate>
+        <div class="form-group row mb-4">
+            <label for="login_input" class="col-sm-3 col-form-label">Login</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="login_input"
+                       placeholder="input login" maxlength="32" required>
+                <div class="invalid-feedback">
+                    Please input login.
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-group row mb-4">
-        <label for="input_email" class = "col-sm-3 col-form-label">Email</label>
-        <div class="col-sm-6">
-            <input type="email" class="form-control" maxlength="32"
-                   id="input_email" placeholder="input email"  required>
-            <div class="invalid-feedback">
-                Please input Email.
+        <div class="form-group row mb-4">
+            <label for="input_email" class="col-sm-3 col-form-label">Email</label>
+            <div class="col-sm-6">
+                <input type="email" class="form-control" maxlength="32"
+                       id="input_email" placeholder="input email"  required>
+                <div class="invalid-feedback">
+                    Please input Email.
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-group row mb-4">
-        <label for="input_nickname" class = "col-sm-3 col-form-label">NickName</label>
-        <div class="col-sm-6">
-            <input type="text" class="form-control" maxlength="32"
-                   id="input_nickname" placeholder="nickname"  required>
-            <div class="invalid-feedback">
-                Please input Nickname.
+        <div class="form-group row mb-4">
+            <label for="input_nickname" class="col-sm-3 col-form-label">NickName</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" maxlength="32"
+                       id="input_nickname" placeholder="nickname"  required>
+                <div class="invalid-feedback">
+                    Please input Nickname.
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-group row mb-4">
-        <label for="password_input" class = "col-sm-3 col-form-label">Password</label>
-        <div class="col-sm-6">
-            <input type="password" class="form-control" maxlength="32"
-                   id="password_input" placeholder="Enter your password"  required>
-            <div class="invalid-feedback">
-                No password.
+        <div class="form-group row mb-4">
+            <label for="password_input" class="col-sm-3 col-form-label">Password</label>
+            <div class="col-sm-6">
+                <input type="password" class="form-control" maxlength="32"
+                       id="password_input" placeholder="Enter your password"  required>
+                <div class="invalid-feedback">
+                    No password.
+                </div>
             </div>
         </div>
-    </div>
-    <div class="form-group row mb-4">
+        <div class="form-group row mb-4">
 
-        <label for="Repeat_password" class = "col-sm-3 col-form-label">Repeat Password</label>
-        <div class="col-sm-6">
-            <input type="password" class="form-control" maxlength="32"
-                   id="Repeat_password" placeholder="Enter your password again" required>
-            <div class="invalid-feedback">
-                No password.
+            <label for="Repeat_password" class="col-sm-3 col-form-label">Repeat Password</label>
+            <div class="col-sm-6">
+                <input type="password" class="form-control" maxlength="32"
+                       id="Repeat_password" placeholder="Enter your password again" required>
+                <div class="invalid-feedback">
+                    No password.
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="form-group row ">
-        <label class = "col-sm-3 col-form-label">Upload avatar</label>
-        <div class="col-sm-4">
-            <div class="custom-file">
-                <input type="file" class="custom-file-input" id="customFile">
-                <label class="custom-file-label" for="customFile">Choose file</label>
+        <div class="form-group row ">
+            <label class = "col-sm-3 col-form-label">Upload avatar</label>
+            <div class="col-sm-4">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="customFile">
+                    <label class="custom-file-label" for="customFile">Choose file</label>
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class = "row">
-        <div class = "col-sm-3">
+        <div class = "row">
+            <div class = "col-sm-3">
+            </div>
+            <div class="col-sm-6">
+                <button type="submit" class="btn btn-primary mb-2">Register!</button>
+            </div>
         </div>
-        <div class="col-sm-6">
-            <button type="submit" class="btn btn-primary mb-2">Register!</button>
-        </div>
-    </div>
-</form>
+    </form>
 {% endblock %}

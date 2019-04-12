@@ -3,14 +3,14 @@
 <div class="media mb-4 p-1 border border-info">
     <div>
         <img src="{% static 'img/2.jpg' %}" class="mr-3" alt="...">
-        <div class="border mt-2 text-right"style="width: 64px">{{answer.likes}}</div>
-        <div class="btn-group btn-group-sm " role="group" aria-label="Basic example">
+        <div class="border mt-2 text-right"style="width: 64px">{{ answer.rating }}</div>
+        <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
             <button type="button" class="btn btn-light btn-sm">&#128077;</button>
             <button type="button" class="btn btn-light btn-sm">&#128078;</button>
         </div>
     </div>
     <div class="media-body">
-        {{answer.text}}
+        {{ answer.text }}
         <div class="custom-control custom-checkbox">
             <input type="checkbox" class="custom-control-input" id={{answer.id}}>
             <label class="custom-control-label ml-2" for={{answer.id}}>Correct!</label>

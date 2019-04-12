@@ -20,7 +20,7 @@ def paginate(objects_list, request):
     return objects_page, paginator
 
 def index(request):
-    questions = Questions.object,.new()
+    questions = Questions.object.new()
     
     flag = 0
     questions = [

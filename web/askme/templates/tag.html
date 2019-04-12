@@ -3,12 +3,12 @@
 {% load static %}
 
 {% block content %}
-<h3 class = "p-4 text-info">Tag: {{tagname}}</h3>
+    <h3 class = "p-4 text-info">Tag: {{tagname}}</h3>
 
-{% for question in questions %}
-    {% include 'inc/question.html' %}
-{% endfor %}
+    {% for question in questions %}
+        {% include 'inc/question.html' %}
+    {% endfor %}
 
-{% include 'inc/pagination.html' %}
+    {% include 'inc/pagination.html' %}
 
 {%endblock%}

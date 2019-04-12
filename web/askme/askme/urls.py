@@ -19,7 +19,7 @@ from django.contrib import admin
 from asker import views
 
 urlpatterns = [
-    #url(r'^admin/', admin.site.urls),
+    url(r'^admin/', admin.site.urls),
     url('login/', views.login, name = 'login'),
     url('register/', views.register, name = 'register'),
     url('settings/', views.settings, name = 'settings'),
