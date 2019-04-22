@@ -1,7 +1,7 @@
 from django.db import transaction
 from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth.models import User
-from asker.models import Question, Profile,Tag,Answer
+from asker.models import Question, Profile,Tag,Answer, Like
 from faker import Faker
 from random import choice, sample,randint
 
@@ -32,7 +32,6 @@ class Command(BaseCommand):
         if tags_cnt is not None:
             self.generate_tags(tags_cnt)
         
-            
         if questions_cnt is not None:
             self.generate_questions(questions_cnt)
             
@@ -68,7 +67,6 @@ class Command(BaseCommand):
             q.save()
             for j in range(r):
                 q.tags.add(tag_ids[j])
-                Tag.objects.plus_to_count(tag_ids[j])
             
                 
                 
@@ -83,27 +81,32 @@ class Command(BaseCommand):
         uids = list(Profile.objects.values_list('id', flat=True))
         qids = list(Question.objects.values_list('id', flat=True))
         for i in range(answers_cnt):
-            Answer.objects.create_answer(choice(uids),
-               choice(qids),
-                '\n'.join(fake.sentences(fake.random_int(2,5))),  
+            quest_id = choice(qids)
+            Answer.objects.create(
+                author_id = choice(uids),
+                question_id = quest_id,
+                text = '\n'.join(fake.sentences(fake.random_int(2,5))), 
             )
-            
-    def qenerate_likes(self,likes_cnt):
-        print("GENERATE_LIKES", answers_cnt)
+
+    def generate_likes(self,likes_cnt):
+        print("GENERATE_LIKES", likes_cnt)
         uids = list(Profile.objects.values_list('id', flat=True))
         qids = list(Question.objects.values_list('id', flat=True))
         aids = list(Answer.objects.values_list('id', flat=True))
         for i in range(likes_cnt):
             m = randint(1,2)
             if (m == 1):
+                quest_id = choice(qids)
                 Like.objects.create(
                     author_id = choice(uids),
-                    quesion_id = choise(qids),
+                    question_id = quest_id,
                 )
+                
             elif (m == 2):
+                answ_id = choice(aids)
                 Like.objects.create(
                     author_id = choice(uids),
-                    answer_id = choise(aids),
+                    answer_id = answ_id,
                 )
             
                 

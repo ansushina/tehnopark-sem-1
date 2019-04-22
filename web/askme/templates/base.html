@@ -24,7 +24,7 @@
 	<div class="media">
 		<img src="{% static 'img/2.jpg' %}" class="mr-3 rounded-circle border border-info" alt="...">
 		<div class="media-body">
-			<h5 class="ml-3">Dr.Pepper</h5>
+			<h5 class="ml-3">{{user.username}}</h5>
 			<ul class="nav">
 				<li class="nav-item">
 					<a class="nav-link text-info" href="{% url 'settings' %}">settings</a>

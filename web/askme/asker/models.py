@@ -1,27 +1,44 @@
 from django.db import models
 from django.conf import settings
+from django.db.models import Count
 
 # Create your models here.
 
 class ProfileManager(models.Manager):
     def user_top(self):
-        return self.order_by('-rating')[:5]
+        q = Question.objects.best()[:10]
+        users = []
+        for quest in q:
+            author = quest.author
+            if not author in users:
+                users.append(quest.author)
+        return users
 
 class Profile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE)
-    #avatar
-    rating = models.IntegerField(default=0)
-    
+    #avatar = models.ImageField(upload_to='static/img/avatar', height_field=64, width_field=64, max_length=100)
     objects = ProfileManager()
 
     def __str__(self):
         return self.user.username
+    
+class TagManager(models.Manager):
+    def questions(self, tag):
+        return tag.question_set.all().order_by('-rating')
+    
+    def popular_tags(self):
+        return self.annotate(count=Count('question')).order_by('-count')[:20]
+    
+class Tag(models.Model):
+    tagname = models.CharField(max_length=32)
+    objects = TagManager()
+    def __str__(self):
+         return self.tagname
 
 
 class QuestionManager(models.Manager):
-
     def new(self):
         return self.order_by('-created_at')
 
@@ -29,46 +46,10 @@ class QuestionManager(models.Manager):
         return self.order_by('-rating')
     
     def answers(self,question):
-        return question.answer_set.all()
-    
-class AnswerManager(models.Manager):
-    def answ_for_question(self,question):
-        all_answ = self.all()
-        q_answ = []
-        for answ in all_answ:
-            if answ.question == question:
-                q_answ.append(answ)
-        return q_answ
-    def create_answer(self,author, question, text):
-        answer = self.create(
-            author_id = author,
-            question_id = question, 
-            text = text,
-        )
-        question = Question.objects.get(pk=question)
-        question.answ_count += 1
-        question.save(update_fields=['answ_count'])
-            
-    
-class TagManager(models.Manager):
-    def questions(self, tag):
-        return tag.question_set.all().order_by('-rating')
-    def popular_tags(self):
-        return self.order_by('-count')[:20]
-    def plus_to_count(self, tag_id):
-        tag = Tag.objects.get(pk=tag_id)
-        tag.count += 1
-        tag.save(update_fields=['count'])
+        question = self.get
+        return question.answer_set.all().order_by('-rating')
         
-
-    
-class Tag(models.Model):
-    tagname = models.CharField(max_length=32)
-    count = models.IntegerField(default=0)
-    objects = TagManager()
-    def __str__(self):
-         return self.tagname
-    
+        
 class Question(models.Model):
 
     objects = QuestionManager()
@@ -82,13 +63,11 @@ class Question(models.Model):
         auto_now_add=True
     )
     rating = models.IntegerField(default=0)
-    answ_count = models.IntegerField(default=0)
     tags = models.ManyToManyField(to=Tag)
-    #answers
 
     def __str__(self):
         return str(self.pk)+str(self.title)
-
+        
 class Answer(models.Model):
     author = models.ForeignKey(
         to=Profile, on_delete=models.CASCADE
@@ -101,7 +80,7 @@ class Answer(models.Model):
     created_at = models.DateTimeField(
         auto_now_add=True
     )
-    objects = AnswerManager()
+    #correct_flag
     def __str__(self):
         return self.question.title
     
@@ -110,9 +89,10 @@ class Like(models.Model):
         to=Profile, on_delete=models.CASCADE
     )
     question = models.ForeignKey(
-        to=Question, on_delete=models.CASCADE
+        to=Question, on_delete=models.CASCADE,
+         null=True
     )
     answer = models.ForeignKey(
-        to=Answer, on_delete=models.CASCADE
+        to=Answer, on_delete=models.CASCADE,  null=True
     )
  

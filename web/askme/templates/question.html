@@ -37,7 +37,7 @@
         {% include 'inc/answer.html' %}
     {% endfor %}
 
-    {% include 'inc/pagination.html' %}
+    {% include 'inc/pagination.html'  with page=answers %}
 
     <hr class ="btn-dark">
     <form class="needs-validation" novalidate>
