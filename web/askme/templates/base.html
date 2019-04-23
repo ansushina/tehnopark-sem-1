@@ -1,4 +1,4 @@
-{% load static%}
+{% load static %}
 
 <!doctype html>
 <html lang="en">
@@ -20,9 +20,9 @@
 			   placeholder="Search" aria-label="Search">
 		<button class="btn btn-outline-info my-2 my-sm-0" type="submit">Ask!</button>
 	</form>
-	{% if login_flag %}
+	{% if is_authenticated %}
 	<div class="media">
-		<img src="{% static 'img/2.jpg' %}" class="mr-3 rounded-circle border border-info" alt="...">
+		<img src="{% static 'img/2.jpg' %}" width="64" height="64" class="mr-3 rounded-circle border border-info" alt="...">
 		<div class="media-body">
 			<h5 class="ml-3">{{user.username}}</h5>
 			<ul class="nav">
