@@ -43,12 +43,7 @@ class QuestionManager(models.Manager):
         return self.order_by('-created_at')
 
     def best(self):
-        return self.order_by('-rating')
-    
-    def answers(self,question):
-        question = self.get
-        return question.answer_set.all().order_by('-rating')
-        
+        return self.order_by('-rating')     
         
 class Question(models.Model):
 
@@ -80,7 +75,7 @@ class Answer(models.Model):
     created_at = models.DateTimeField(
         auto_now_add=True
     )
-    #correct_flag
+    #correct_flag = booleanField(default=False)
     def __str__(self):
         return self.question.title
     
