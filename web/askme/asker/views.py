@@ -9,8 +9,6 @@ from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Count
 
-
-#from asker import Question
 from asker.models import Question,Profile,Tag,Answer
 
 
@@ -76,6 +74,7 @@ def question(request,qid):
     return render(request,'question.html',context=context)
 
 def register(request):
+    #try https://docs.djangoproject.com/en/2.2/howto/custom-template-tags/
     users_top = Profile.objects.user_top()
     popular_tags = Tag.objects.popular_tags()
     return render(request, 'register.html', {
