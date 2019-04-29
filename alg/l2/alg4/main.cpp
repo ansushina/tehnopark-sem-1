@@ -5,98 +5,41 @@ class AvlTree
 {
     struct Node
     {
-        Node(const Key &key) : key(key), height(1), left(nullptr), right(nullptr) {}
+        Node(const Key &key) : key(key), height(1), children(0), left(NULL), right(NULL) {}
         Key key;
         size_t height;
+        size_t children;
         Node *left;
         Node *right;
     };
 
 public:
-    AvlTree() : root(nullptr) {}
+    AvlTree() : root(NULL) {}
     ~AvlTree()
     {
         destroyTree(root);
     }
 
-    bool Has(const Key &key) const
+public:
+    size_t Add_with_position(const Key &key)
     {
-        Node *tmp = root;
-        while (tmp)
-        {
-            if (tmp->key == key)
-            {
-                return true;
-            }
-            else if (tmp->key < key)
-            {
-                tmp = tmp->right;
-            }
-            else
-            {
-                tmp = tmp->left;
-            }
-        }
-        return false;
+        size_t pos = 0;
+        root = addInternal(root, key, pos);
+        return pos;
     }
-    void Add(const Key &key)
-    {
-        root = addInternal(root, key);
-
-    }
-    void Remove(const Key &key)
+    int Remove(const Key &key)
     {
         root = removeInternal(root, key);
     }
-    void RemoveByNumver( size_t number)
+    void RemoveByNumver(size_t number)
     {
         Key key = root->key;
         size_t pos = 0;
-        find_key(root, key, pos, number);
-        Remove(key);
-    }
-    size_t find_position(const Key &key)
-    {
-        size_t pos = 0;
-        find(root, key, pos);
-        return pos;
+        root = removeInternal_2(root,pos, number);
     }
 
 private:
-
     Node *root;
-
-    size_t find(Node *node, const Key &key, size_t &pos)
-    {
-        if (!node)
-            return 0;
-        if (node->key == key)
-            return 1;
-        if (find(node->right, key, pos))
-            return 1;
-        pos++;
-        if (find(node->left, key, pos))
-            return 1;
-        return 0;
-    }
-
-    size_t find_key(Node *node, Key &key, size_t &pos, size_t number)
-    {
-
-        if (!node)
-            return 0;
-        if (find_key(node->right, key, pos,number))
-            return 1;
-        if (pos == number)
-        {
-            key = node->key;
-            return 1;
-        }
-        pos++;
-        if (find_key(node->left, key, pos,number))
-            return 1;
-        return 0;
-    }
 
     void destroyTree(Node *node)
     {
@@ -108,30 +51,49 @@ private:
         }
     }
 
-    Node *addInternal(Node *node, const Key &key)
+    Node *addInternal(Node *node, const Key &key, size_t &pos)
     {
         if (!node)
             return new Node(key);
+        node->children++;
         if (node->key <= key)
-            node->right = addInternal(node->right, key);
+        {
+            node->right = addInternal(node->right, key, pos);
+        }
         else
-            node->left = addInternal(node->left, key);
+        {
+            pos++;
+            if (node->right)
+                pos += node->right->children+1;
+            node->left = addInternal(node->left, key, pos);
+        }
 
         return doBalance(node);
     }
 
-    Node* removeInternal(Node *node, const Key &key)
+    Node* removeInternal_2(Node *node, size_t &pos, size_t number)
     {
         if (!node)
-            return nullptr;
-        if (node->key < key)
-            node->right = removeInternal(node->right, key);
-        else if (node->key > key)
-            node->left = removeInternal(node->left, key);
+            return NULL;
+        size_t now_pos = pos;
+        if (node->right)
+        {
+            now_pos += node->right->children + 1;
+        }
+        if (node->children)
+            node->children--;
+        if (now_pos > number)
+            node->right = removeInternal_2(node->right, pos, number);
+        else if (now_pos < number)
+        {
+            pos = now_pos+1;
+            node->left = removeInternal_2(node->left, pos, number);
+        }
         else
         {
             Node *left = node->left;
             Node *right = node->right;
+            size_t children = node->children;
 
             delete node;
 
@@ -140,8 +102,11 @@ private:
 
             Node *min = findMin(right);
             min->right = removeMin(right);
-            min->left = left;;
-            //Node *min = find_and_removeMin(right,left);
+
+
+            //Node *min = find_and_removeMin(right);
+            min->left = left;
+            min->children = children;
 
             return doBalance(min);
         }
@@ -149,26 +114,28 @@ private:
         return doBalance(node);
     }
 
-    Node* find_and_removeMin(Node *right, Node *left)
+    Node* find_and_removeMin(Node *right)
     {
         Node *node = right;
+        if (!node->left)
+        {
+            return node;
+        }
         Node *tmp;
-
+        node->children--;
         if (!node->left->left)
         {
             tmp = node->left;
             node->left = node->left->right;
             node = doBalance(node);
             tmp->right = node;
-            tmp->left = left;
             return tmp;
         }
-        tmp = find_and_removeMin(node->left, node->left);
+
+        tmp = find_and_removeMin(node->left);
         node = doBalance(node);
         tmp->right = node;
-        tmp->left = left;
         return tmp;
-
     }
 
     Node* findMin(Node *node)
@@ -182,6 +149,7 @@ private:
     {
         if (!node->left)
             return node->right;
+        node->children--;
         node->left = removeMin(node->left);
         return doBalance(node);
     }
@@ -229,6 +197,12 @@ private:
     Node* rotateLeft(Node *node)
     {
         Node *tmp = node->right;
+        tmp->children += 1;
+        if (node->left)
+             tmp->children += node->left->children + 1;
+        node->children--;
+        if (tmp->right)
+            node->children -= tmp->right->children + 1;
         node->right = tmp->left;
         tmp->left = node;
         fixHeight(node);
@@ -239,6 +213,12 @@ private:
     Node* rotateRight(Node *node)
     {
         Node *tmp = node->left;
+        tmp->children++;
+        if (node->right)
+            tmp->children += node->right->children + 1;
+        node->children--;
+        if (tmp->left)
+            node->children -= tmp->left->children + 1;
         node->left = tmp->right;
         tmp->right = node;
         fixHeight(node);
@@ -257,16 +237,13 @@ int main(int argc, const char * argv[]) {
         cin >> op >> key;
         if (op == 1)
         {
-            tree.Add(key);
-            pos = tree.find_position(key);
+            pos = tree.Add_with_position(key);
             cout << pos << endl;
         }
         else if (op == 2)
         {
             tree.RemoveByNumver(key);
         }
-
-        //bintree.Add(key);
     }
     return 0;
 }
