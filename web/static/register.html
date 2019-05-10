@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+
+	<title>register!</title>
+</head>
+<body>
+
+<nav class="navbar navbar-light bg-light border-bottom border-info">
+    <a class="navbar-brand ml-2 p-2" href ="#"><strong class = "text-info "><h1>ASKme</h1></strong></a>
+    <form class="form-inline">
+        <input class="form-control mr-sm-1 border border-info" type="search"
+               placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-info my-2 my-sm-0" type="submit">Ask!</button>
+    </form>
+    <div class="media mr-5">
+        <ul class="nav mr-5">
+            <li class="nav-item">
+                <a class="nav-link text-info" href="#">log in</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-info" href="#">register</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class = "container mt-4">
+	<div class = "row">
+		<div class = "col-8">
+            <h3 class ="p-4 text-info">Registration</h3>
+			<form class="needs-validation" novalidate>
+				<div class="form-group row mb-4">
+					<label for="login_input" class = "col-sm-3 col-form-label">Login</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" id="login_input"
+							   placeholder="input login" maxlength="32" required>
+						<div class="invalid-feedback">
+							Please input login.
+						</div>
+					</div>
+				</div>
+				<div class="form-group row mb-4">
+					<label for="input_email" class = "col-sm-3 col-form-label">Email</label>
+					<div class="col-sm-6">
+						<input type="email" class="form-control" maxlength="32"
+							   id="input_email" placeholder="input email"  required>
+						<div class="invalid-feedback">
+							Please input Email.
+						</div>
+					</div>
+				</div>
+				<div class="form-group row mb-4">
+					<label for="input_nickname" class = "col-sm-3 col-form-label">NickName</label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" maxlength="32"
+							   id="input_nickname" placeholder="nickname"  required>
+						<div class="invalid-feedback">
+							Please input Nickname.
+						</div>
+					</div>
+				</div>
+				<div class="form-group row mb-4">
+					<label for="password_input" class = "col-sm-3 col-form-label">Password</label>
+					<div class="col-sm-6">
+						<input type="password" class="form-control" maxlength="32"
+							   id="password_input" placeholder="Enter your password"  required>
+						<div class="invalid-feedback">
+							No password.
+						</div>
+					</div>
+				</div>
+				<div class="form-group row mb-4">
+
+					<label for="Repeat_password" class = "col-sm-3 col-form-label">Repeat Password</label>
+					<div class="col-sm-6">
+						<input type="password" class="form-control" maxlength="32"
+							   id="Repeat_password" placeholder="Enter your password again" required>
+						<div class="invalid-feedback">
+							No password.
+						</div>
+					</div>
+				</div>
+
+				<div class="form-group row ">
+					<label class = "col-sm-3 col-form-label">Upload avatar</label>
+					<div class="col-sm-4">
+						<div class="custom-file">
+							<input type="file" class="custom-file-input" id="customFile">
+							<label class="custom-file-label" for="customFile">Choose file</label>
+						</div>
+					</div>
+				</div>
+
+				<div class = "row">
+					<div class = "col-sm-3">
+					</div>
+					<div class="col-sm-6">
+						<button type="submit" class="btn btn-primary mb-2">Register!</button>
+					</div>
+				</div>
+			</form>
+		</div>
+
+        <div class = "col-md-4 col-12">
+            <div class = "alert alert-light">
+                <div class = "mb-4">
+                    <h2 class = "text-info">Popular Tags:</h2>
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" href="#">Technopark</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-info" href="#">Perl</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-warning" href="#">MySQL</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-success" href="#">Django</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-primary" href="#">Mail.ru</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" href="#">firefox</a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h2 class = "text-info">Users Top:</h2>
+                    <nav class="nav flex-column">
+                        <a class="nav-link text-success" href="#">Steve Jobs</a>
+                        <a class="nav-link text-success" href="#">Alex Larin</a>
+                        <a class="nav-link text-success" href="#">Vasya Pupkin</a>
+                        <a class="nav-link text-success" href="#">Dima Ivanov</a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+	</div>
+
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="js/jquery-3.3.1.slim.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script>
+	// Example starter JavaScript for disabling form submissions if there are invalid fields
+	(function() {
+		'use strict';
+		window.addEventListener('load', function() {
+			// Fetch all the forms we want to apply custom Bootstrap validation styles to
+			var forms = document.getElementsByClassName('needs-validation');
+			// Loop over them and prevent submission
+			var validation = Array.prototype.filter.call(forms, function(form) {
+				form.addEventListener('submit', function(event) {
+					if (form.checkValidity() === false) {
+						event.preventDefault();
+						event.stopPropagation();
+					}
+					form.classList.add('was-validated');
+				}, false);
+			});
+		}, false);
+	})();
+</script>
+</body>
+</html>
