@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% load static %}
-
+{% load crispy_forms_tags %}
 {% block content %}
     <h3 class = "p-4 text-info"> {{ question.title }} </h3>
     <div class="media mb-4">
@@ -9,8 +9,8 @@
         <img src="{% static 'img/2.jpg'%}" width="100" height="100"class="mr-3" alt="...">
         <div class="border mt-2 text-right"style="width: 64px">{{ question.rating }}</div>
         <div class="btn-group btn-group-sm " role="group" aria-label="Basic example">
-            <button type="button" class="btn btn-light btn-sm">&#128077;</button>
-            <button type="button" class="btn btn-light btn-sm">&#128078;</button>
+            <button type="button" class="js-like-question" data-question_id="{{ question.id }}">&#128077;</button>
+            <button type="button" class="js-dislike-question" data-question_id="{{ question.id }}">&#128078;</button>
         </div>
         </div>
         <div class="media-body">
@@ -40,6 +40,7 @@
     {% include 'inc/pagination.html'  with page=answers %}
 
     <hr class ="btn-dark">
+<!--
     <form class="needs-validation" novalidate>
         <div class="form-group">
             <div>
@@ -50,6 +51,14 @@
                 <button type="submit" class="btn btn-primary mt-2">Answer!</button>
             </div>
         </div>
+    </form>
+!-->
+    <form method="POST" novalidate>
+        {% csrf_token %}
+        <table>
+        {{ form|crispy }}
+        </table>
+        <button type="submit" class="btn btn-primary mt-2">Answer!</button>
     </form>
 
 {% endblock %}

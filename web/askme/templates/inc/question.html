@@ -6,8 +6,8 @@
     <img src="{% static 'img/2.jpg' %}" class="mr-3" alt="...">
     <div class="border mt-2 text-right"style="width: 64px">{{ question.rating }}</div>
     <div class="btn-group btn-group-sm" role="group" aria-label="Basic example">
-        <button type="button" class="btn btn-light btn-sm">&#128077;</button>
-        <button type="button" class="btn btn-light btn-sm">&#128078;</button>
+        <button type="button" class="js-like-question" data-question_id="{{ question.id }}">&#128077;</button>
+        <button type="button" class="js-dislike-question" data-question_id="{{ question.id }}">&#128078;</button>
     </div>
 </div>
     <div class="media-body">

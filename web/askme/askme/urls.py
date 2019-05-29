@@ -17,15 +17,23 @@ from django.conf.urls import url
 from django.contrib import admin
 
 from asker import views
+from django.conf import settings
+
+from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url('login/', views.login, name = 'login'),
-    url('register/', views.register, name = 'register'),
+    url('signup/', views.register, name = 'register'),
     url('settings/', views.settings, name = 'settings'),
     url('ask/', views.ask, name = 'ask'),
     url(r'^question/(?P<qid>\d+)/$', views.question ,name = 'question'),
     url(r'^tag/(?P<tagname>\w+)/$', views.tag ,name = 'tag'),
+    url('signout/', views.signout, name='signout'),
+    url('like_article/', views.like_article, name='like_article'),
+    url('like_answer/', views.like_answer, name='like_answer'),
+    url('dislike_article/', views.dislike_article, name='dislike_article'),
+    url('dislike_answer/', views.dislike_answer, name='dislike_answer'),
     url('hot/', views.hot, name = 'hot'),
     url('', views.index, name = 'index'),   
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

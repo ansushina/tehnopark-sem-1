@@ -2,9 +2,12 @@
 
 {% load static %}
 
+{% load crispy_forms_tags %}
+
 {% block content %}
 
 <h3 class = "p-4 text-info">New Question</h3>
+<!--
 <form class="needs-validation" novalidate>
     <div class="form-group row">
         <label for="Input_title" class="col-sm-1 col-form-label">Title</label>
@@ -47,6 +50,13 @@
         </div>
     </div>
 </form>
-
+-->
+<form action="{% url 'ask' %}" method="POST" novalidate>
+    {% csrf_token %}
+    <table>
+    {{ form|crispy }}
+    </table>
+    <button type="submit" class="btn btn-primary mb-2">ASK!</button>
+</form>
 
 {% endblock %}

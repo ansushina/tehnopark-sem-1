@@ -14,16 +14,35 @@ class ProfileManager(models.Manager):
             if not author in users:
                 users.append(quest.author)
         return users
+    def update(self, user, cdata):
+        user_fields, profile_fields = ['username', 'first_name', 'email'], ['bio', 'avatar']
+        fields_to_update = {'user': [], 'profile': []}
+        profile = Profile.objects.get(user=user.id)
+        user = User.objects.get(pk=user.id)
+        for key in user_fields:
+            value = cdata.get(key, False)
+            if value:
+                fields_to_update['user'].append(key)
+                setattr(user, key, value)
+
+
+        value = cdata.get('avatar', False)
+        if value:
+            fields_to_update['profile'].append('avatar')
+            #profile.avatar=value
+        user.save(update_fields=fields_to_update['user'])
+        profile.save(update_fields=fields_to_update['profile'])
+        
 
 class Profile(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE)
     avatar = models.ImageField(
-        upload_to='avatar/', 
-        height_field=64, 
-        width_field=64, 
-        max_length=100)
+        upload_to='uploads/%Y/%m/%d/', null=True, 
+        max_length=100,
+        blank=True
+    )
     objects = ProfileManager()
 
     def __str__(self):
@@ -59,7 +78,7 @@ class Question(models.Model):
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField(default=0)
-    tags = models.ManyToManyField(to=Tag)
+    tags = models.ManyToManyField(to=Tag, null=True,  blank=True)
 
     def __str__(self):
         return str(self.pk)+str(self.title)

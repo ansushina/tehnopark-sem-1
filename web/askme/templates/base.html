@@ -15,14 +15,21 @@
 
 <nav class="navbar navbar-light bg-light border-bottom border-info">
 	<a class="navbar-brand ml-2 p-2" href="/"><strong class = "text-info "><h1>ASKme</h1></strong></a>
-	<form class="form-inline">
+	<form class="form-inline" action="{% url 'ask'%}">
 		<input class="form-control mr-sm-1 border border-info" type="search"
 			   placeholder="Search" aria-label="Search">
 		<button class="btn btn-outline-info my-2 my-sm-0" type="submit">Ask!</button>
 	</form>
-	{% if is_authenticated %}
+	{% if user.is_authenticated %}
 	<div class="media">
-		<img src="{% static 'img/2.jpg' %}" width="64" height="64" class="mr-3 rounded-circle border border-info" alt="...">
+        
+        {% if user.profile.avatar %}
+		  <img src="user.profile.avatar.url" width="64" height="64" class="mr-3 rounded-circle border border-info" alt="">
+        {% else %}
+          <img src="#" width="64" height="64" class="mr-3 rounded-circle border border-info" alt="">
+        {% endif %}
+        
+        
 		<div class="media-body">
 			<h5 class="ml-3">{{user.username}}</h5>
 			<ul class="nav">
@@ -30,7 +37,7 @@
 					<a class="nav-link text-info" href="{% url 'settings' %}">settings</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link text-info" href="#">log out</a>
+					<a class="nav-link text-info" href="{% url 'signout'%}">log out</a>
 				</li>
 			</ul>
 		</div>
@@ -84,9 +91,10 @@
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<script src="{%static 'js/jquery-3.3.1.slim.min.js' %}"></script>
+<script src="{%static 'js/jquery-3.4.1.min.js' %}"></script>
 <script src="{%static 'js/popper.min.js' %}"></script>
 <script src="{%static 'js/bootstrap.min.js' %}"></script>
+<script src="{% static "js/askme.js" %}"></script>
 <script>
 	// Example starter JavaScript for disabling form submissions if there are invalid fields
 	(function() {
